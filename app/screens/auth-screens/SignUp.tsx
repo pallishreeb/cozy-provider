@@ -1,5 +1,13 @@
-import React, {useState} from 'react';
-import {ImageBackground, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Alert,
+  ImageBackground,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   responsiveHeight as hp,
   responsiveWidth as wp,
@@ -9,30 +17,118 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Input from '../../components/input';
 import SubmitButton from '../../components/button';
+import {axiosPublic} from '../../utils/axiosConfig';
+import {endpoints} from '../../constants';
 const SignIn = ({navigation}) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState<{
+    name: string | null;
+    email: string | null;
+    password: string | null;
+    confirmPassword: string | null;
+  }>();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
   const toggleConfirmPasswordVisibility = () => {
     setConfirmPasswordVisible(!confirmPasswordVisible);
   };
+  const validateForm = () => {
+    let errors: {
+      name: string | null;
+      email: string | null;
+      password: string | null;
+      confirmPassword: string | null;
+    } = {
+      name: null,
+      email: null,
+      password: null,
+      confirmPassword: null,
+    };
+    // Validate email field
+    if (!name) {
+      errors.name = 'Name is required.';
+    } else if (name.length < 3) {
+      errors.password = 'Password must be at least 3 characters.';
+    }
+    if (!email) {
+      errors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email is invalid.';
+    }
+    // Validate password field
+    if (!password) {
+      errors.password = 'Password is required.';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters.';
+    }
+    if (!confirmPassword) {
+      errors.confirmPassword = 'Confirm Password is required.';
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = 'Confirm Password must be equals to Password';
+    }
+    // Set the errors and update form validity
+    // Check if both errors.email and errors.password are null
+    setErrors(errors);
+    const isErrors =
+      errors.email === null &&
+      errors.password === null &&
+      errors.confirmPassword === null &&
+      errors.name === null;
+    setIsFormValid(isErrors);
+  };
+  useEffect(() => {
+    validateForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, password, confirmPassword, name]);
+  const handleSubmit = async () => {
+    if (!isFormValid) {
+      // Form is invalid, display error messages
+      console.log('Form has errors. Please correct them.');
+      Alert.alert('Errors', 'Form has errors. Please correct them.');
+    }
+    try {
+      setIsLoading(true);
+      const response = await axiosPublic.post(`${endpoints.SIGN_UP}`, {
+        email,
+        password,
+        name,
+      });
+      Alert.alert('Info', `${response.data.message}`, [
+        {
+          text: 'OK',
+          onPress: () =>
+            navigation.navigate('VerificationCode', {
+              email: email,
+              previousRoute: 'SignUp',
+            }),
+        },
+      ]);
+    } catch (error) {
+      console.log('inside catch', error.response);
+      Alert.alert('Information', `Sign Up failed \nPlease try again later`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
       <KeyboardAwareScrollView contentContainerStyle={{flexGrow: 1}}>
         <StatusBar backgroundColor={'#FF3131'} barStyle="light-content" />
-        <View
+        <ScrollView
           style={{
             height: hp(90),
             backgroundColor: 'white',
             borderBottomLeftRadius: 80,
             borderBottomRightRadius: 80,
-    
           }}>
           <View style={styles.illustrationContainer}>
             <ImageBackground
@@ -47,7 +143,16 @@ const SignIn = ({navigation}) => {
               </Text>
             </ImageBackground>
           </View>
-
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Name</Text>
+            <Input
+              placeholder="johndoe"
+              leftIconName="user"
+              value={name}
+              setValue={setName}
+            />
+            <Text style={styles.errorMSg}>{errors?.name}</Text>
+          </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>Email</Text>
             <Input
@@ -58,6 +163,7 @@ const SignIn = ({navigation}) => {
               value={email}
               setValue={setEmail}
             />
+            <Text style={styles.errorMSg}>{errors?.email}</Text>
           </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>Password</Text>
@@ -67,9 +173,11 @@ const SignIn = ({navigation}) => {
               setValue={setPassword}
               leftIconName="lock"
               secureTextEntry={!passwordVisible}
+              isRightIcon={true}
               rightIconName={passwordVisible ? 'eye' : 'eye-slash'}
               iconRightPress={togglePasswordVisibility}
             />
+            <Text style={styles.errorMSg}>{errors?.password}</Text>
           </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}> Confirm Password</Text>
@@ -78,18 +186,21 @@ const SignIn = ({navigation}) => {
               value={confirmPassword}
               setValue={setConfirmPassword}
               leftIconName="lock"
+              isRightIcon={true}
               secureTextEntry={!confirmPasswordVisible}
               rightIconName={confirmPasswordVisible ? 'eye' : 'eye-slash'}
               iconRightPress={toggleConfirmPasswordVisibility}
             />
+            <Text style={styles.errorMSg}>{errors?.confirmPassword}</Text>
           </View>
           <View style={styles.submitButtonConatiner}>
             <SubmitButton
-              onPress={() => navigation.navigate('VerificationCode')}
-              title="Sign Up"
+              title={isLoading ? 'Submitting' : 'Sign Up'}
+              onPress={handleSubmit}
+              disabled={!isFormValid || isLoading}
             />
           </View>
-        </View>
+        </ScrollView>
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             Already have an account?{' '}
@@ -114,7 +225,7 @@ const styles = StyleSheet.create({
   },
   illustrationContainer: {
     width: wp(100),
-    height: hp(30),
+    height: hp(25),
     backgroundColor: '#FF3130',
     alignSelf: 'center',
     alignItems: 'center',
@@ -123,7 +234,7 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 80,
   },
   illustrationImg: {
-    height: fp(30),
+    height: fp(25),
     width: fp(30),
     marginTop: hp(-3),
   },
@@ -154,13 +265,18 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   fieldContainer: {
-    marginTop: 20,
+    marginTop: 10,
     marginHorizontal: wp(6),
   },
   label: {
     fontSize: 16,
     color: 'gray',
     marginBottom: 5,
+  },
+  errorMSg: {
+    color: 'red',
+    fontSize: 14,
+    // marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',

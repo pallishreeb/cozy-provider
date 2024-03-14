@@ -8,9 +8,9 @@ import VerificationCode from '../screens/auth-screens/VerificationCode';
 export type AuthStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
-  VerificationCode: undefined;
+  VerificationCode: {email: string; previousRoute: string};
   ForgotPassword: undefined;
-  ResetPassword: undefined;
+  ResetPassword: {email: string};
 };
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
@@ -22,13 +22,12 @@ const AuthNavigator = () => {
       <Stack.Screen name="SignIn" component={SignIn} />
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="VerificationCode" component={VerificationCode} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       <Stack.Screen
-        name="ForgotPassword"
-        component={ForgotPassword}
+        name="ResetPassword"
+        component={ResetPassword}
         // options={{headerShown: false}}
       />
-
-      <Stack.Screen name="ResetPassword" component={ResetPassword} />
     </Stack.Navigator>
   );
 };

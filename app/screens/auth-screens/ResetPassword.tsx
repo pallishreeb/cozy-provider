@@ -1,5 +1,12 @@
-import React, {useState} from 'react';
-import {ImageBackground, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Alert,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   responsiveHeight as hp,
   responsiveWidth as wp,
@@ -9,17 +16,86 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Input from '../../components/input';
 import SubmitButton from '../../components/button';
 import OtpInput from '../../components/otpInput';
-const SignIn = ({navigation}) => {
+import {axiosPublic} from '../../utils/axiosConfig';
+import {endpoints} from '../../constants';
+const SignIn = ({navigation, route}) => {
+  const {email} = route.params;
   const [currentOtp, setCurrentOtp] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState<{
+    password: string | null;
+    confirmPassword: string | null;
+  }>();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
   const toggleConfirmPasswordVisibility = () => {
     setConfirmPasswordVisible(!confirmPasswordVisible);
+  };
+  const validateForm = () => {
+    let errors: {
+      password: string | null;
+      confirmPassword: string | null;
+    } = {
+      password: null,
+      confirmPassword: null,
+    };
+
+    // Validate password field
+    if (!password) {
+      errors.password = 'Password is required.';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters.';
+    }
+    if (!confirmPassword) {
+      errors.confirmPassword = 'Confirm Password is required.';
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = 'Confirm Password must be equals to Password';
+    }
+    // Set the errors and update form validity
+    // Check if both errors.email and errors.password are null
+    setErrors(errors);
+    const isErrors =
+      errors.confirmPassword === null && errors.password === null;
+    setIsFormValid(isErrors);
+  };
+  useEffect(() => {
+    validateForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, password, confirmPassword]);
+  const handleSubmit = async () => {
+    if (!isFormValid) {
+      // Form is invalid, display error messages
+      console.log('Form has errors. Please correct them.');
+      Alert.alert('Errors', 'Form has errors. Please correct them.');
+    }
+    try {
+      setIsLoading(true);
+      const response = await axiosPublic.post(`${endpoints.RESET_PASSWORD}`, {
+        otp: currentOtp,
+        email,
+        password,
+      });
+      Alert.alert('Info', `${response?.data?.message}`, [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('SignIn'),
+        },
+      ]);
+    } catch (error) {
+      console.log('inside catch', error?.response);
+      Alert.alert(
+        'Information',
+        `Reset Password Failed \nPlease try again later`,
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -64,6 +140,7 @@ const SignIn = ({navigation}) => {
               rightIconName={passwordVisible ? 'eye' : 'eye-slash'}
               iconRightPress={togglePasswordVisibility}
             />
+            <Text style={styles.errorMSg}>{errors?.password}</Text>
           </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}> Confirm Password</Text>
@@ -76,11 +153,13 @@ const SignIn = ({navigation}) => {
               rightIconName={confirmPasswordVisible ? 'eye' : 'eye-slash'}
               iconRightPress={toggleConfirmPasswordVisibility}
             />
+            <Text style={styles.errorMSg}>{errors?.confirmPassword}</Text>
           </View>
           <View style={styles.submitButtonConatiner}>
             <SubmitButton
-              onPress={() => navigation.navigate('SignIn')}
-              title="Reset"
+              title={isLoading ? 'Submitting' : 'Reset'}
+              onPress={handleSubmit}
+              disabled={!isFormValid || isLoading}
             />
           </View>
         </View>
@@ -105,6 +184,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: '#FF3131',
+  },
+  errorMSg: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 8,
   },
   illustrationContainer: {
     width: wp(100),

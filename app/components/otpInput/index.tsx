@@ -13,10 +13,10 @@ export default ({
   return (
     <OtpInput
       autoFocus
-      numberOfDigits={4}
+      numberOfDigits={6}
       focusColor="#FF3131"
       focusStickBlinkingDuration={500}
-      onTextChange={text => console.log(text)}
+      onTextChange={text => setCurrentOtp(text)}
       onFilled={text => setCurrentOtp(text)}
       theme={{
         containerStyle: {

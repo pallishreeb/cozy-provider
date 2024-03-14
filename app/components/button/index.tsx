@@ -5,9 +5,12 @@ import {
   responsiveWidth as wp,
   responsiveFontSize as fp,
 } from 'react-native-responsive-dimensions';
-export default ({onPress = () => {}, title = ''}) => {
+export default ({onPress = () => {}, title = '', disabled = false}) => {
   return (
-    <TouchableOpacity style={styles.submitButton} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.submitButton, {opacity: disabled ? 0.5 : 1}]}
+      onPress={onPress}
+      disabled={disabled}>
       <Text style={styles.submmitButtonText}>{title}</Text>
     </TouchableOpacity>
   );

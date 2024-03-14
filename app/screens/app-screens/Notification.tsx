@@ -1,18 +1,18 @@
 import {StyleSheet, Text, View, SafeAreaView, ScrollView} from 'react-native';
 import React from 'react';
 import Header from '../../components/header';
-const Home = () => {
+const Notification = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
       <ScrollView>
-        <Text>Home</Text>
+        <Text>Notification</Text>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default Home;
+export default Notification;
 
 const styles = StyleSheet.create({
   container: {

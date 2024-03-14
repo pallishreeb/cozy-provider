@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   ImageBackground,
   StatusBar,
   StyleSheet,
@@ -15,8 +16,59 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Input from '../../components/input';
 import SubmitButton from '../../components/button';
+import {axiosPublic} from '../../utils/axiosConfig';
+import {endpoints} from '../../constants';
 const SignIn = ({navigation}) => {
   const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState<{
+    email: string | null;
+  }>();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    validateForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email]);
+
+  const validateForm = () => {
+    let errors: {email: string | null} = {
+      email: null,
+    };
+    // Validate email field
+    if (!email) {
+      errors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email is invalid.';
+    }
+
+    setErrors(errors);
+    const isErrors = errors.email === null;
+    setIsFormValid(isErrors);
+  };
+  const handleSubmit = async () => {
+    if (!isFormValid) {
+      // Form is invalid, display error messages
+      console.log('Form has errors. Please correct them.');
+      Alert.alert('Errors', 'Form has errors. Please correct them.');
+    }
+    try {
+      setIsLoading(true);
+      const response = await axiosPublic.post(`${endpoints.FORGOT_PASSWORD}`, {
+        email,
+      });
+      console.log('login response', response?.data);
+      Alert.alert('Info', `${response?.data?.message}`, [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('ResetPassword', {email}),
+        },
+      ]);
+    } catch (error) {
+      console.log('inside catch', error?.response);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -53,11 +105,13 @@ const SignIn = ({navigation}) => {
               value={email}
               setValue={setEmail}
             />
+            <Text style={styles.errorMSg}>{errors?.email}</Text>
           </View>
           <View style={styles.submitButtonConatiner}>
             <SubmitButton
-              onPress={() => navigation.navigate('ResetPassword')}
-              title="Reset"
+              title={isLoading ? 'Submitting' : 'Submit'}
+              onPress={handleSubmit}
+              disabled={!isFormValid || isLoading}
             />
           </View>
         </View>
@@ -82,6 +136,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: '#FF3131',
+  },
+  errorMSg: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 8,
   },
   illustrationContainer: {
     width: wp(100),

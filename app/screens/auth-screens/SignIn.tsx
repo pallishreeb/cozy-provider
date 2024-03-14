@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   ImageBackground,
   StatusBar,
   StyleSheet,
@@ -15,13 +16,77 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Input from '../../components/input';
 import SubmitButton from '../../components/button';
+import {axiosPublic} from '../../utils/axiosConfig';
+import {endpoints} from '../../constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
+import {setSignIn} from '../../redux/slices/authSlice';
 const SignIn = ({navigation}) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const [errors, setErrors] = useState<{
+    email: string | null;
+    password: string | null;
+  }>();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
+  };
+  useEffect(() => {
+    validateForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, password]);
+
+  const validateForm = () => {
+    let errors: {email: string | null; password: string | null} = {
+      email: null,
+      password: null,
+    };
+    // Validate email field
+    if (!email) {
+      errors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email is invalid.';
+    }
+    // Validate password field
+    if (!password) {
+      errors.password = 'Password is required.';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters.';
+    }
+    // Set the errors and update form validity
+    // Check if both errors.email and errors.password are null
+    setErrors(errors);
+    const isErrors = errors.email === null && errors.password === null;
+    setIsFormValid(isErrors);
+  };
+  const handleSubmit = async () => {
+    if (!isFormValid) {
+      // Form is invalid, display error messages
+      console.log('Form has errors. Please correct them.');
+      Alert.alert('Errors', 'Form has errors. Please correct them.');
+    }
+    try {
+      setIsLoading(true);
+      const response = await axiosPublic.post(`${endpoints.LOGIN}`, {
+        email,
+        password,
+      });
+      console.log('login response', response?.data);
+      dispatch(setSignIn(response?.data));
+      await AsyncStorage.setItem('@auth', JSON.stringify(response?.data));
+    } catch (error) {
+      console.log('inside catch', error?.response);
+      Alert.alert(
+        'Error',
+        'Login Failed ! Wrong credentials or server issue.\nPlease check your internet connect and try again later',
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,6 +98,7 @@ const SignIn = ({navigation}) => {
             height: hp(90),
             backgroundColor: 'white',
             borderBottomRightRadius: 80,
+            borderBottomLeftRadius: 80,
           }}>
           <View style={styles.illustrationContainer}>
             <ImageBackground
@@ -58,6 +124,7 @@ const SignIn = ({navigation}) => {
               value={email}
               setValue={setEmail}
             />
+            <Text style={styles.errorMSg}>{errors?.email}</Text>
           </View>
 
           <View style={styles.fieldContainer}>
@@ -67,10 +134,12 @@ const SignIn = ({navigation}) => {
               value={password}
               setValue={setPassword}
               leftIconName="lock"
+              isRightIcon={true}
               secureTextEntry={!passwordVisible}
               rightIconName={passwordVisible ? 'eye' : 'eye-slash'}
               iconRightPress={togglePasswordVisibility}
             />
+            <Text style={styles.errorMSg}>{errors?.password}</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('ForgotPassword')}
               style={styles.forgotPasswordContainer}>
@@ -78,7 +147,11 @@ const SignIn = ({navigation}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.submitButtonConatiner}>
-            <SubmitButton onPress={() => {}} title="Login" />
+            <SubmitButton
+              title={isLoading ? 'Submitting' : 'Login'}
+              onPress={handleSubmit}
+              disabled={!isFormValid || isLoading}
+            />
           </View>
         </View>
         <View style={styles.footer}>
@@ -137,6 +210,11 @@ const styles = StyleSheet.create({
     fontWeight: 'normal', // Or specify the desired weight
     textTransform: 'none', // Default, but explicitly stated for clarity
     marginTop: 5, // Add some space between the two texts
+  },
+  errorMSg: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 8,
   },
   overlayView: {
     width: wp(100),

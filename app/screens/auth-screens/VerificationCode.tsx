@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {ImageBackground, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   responsiveHeight as hp,
   responsiveWidth as wp,
@@ -8,8 +15,35 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import OtpInput from '../../components/otpInput';
 import SubmitButton from '../../components/button';
-const SignIn = ({navigation}) => {
+import {axiosPublic} from '../../utils/axiosConfig';
+import {endpoints} from '../../constants';
+const SignIn = ({navigation, route}) => {
+  const {email, previousRoute} = route.params;
   const [currentOtp, setCurrentOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const handleVerifyOtp = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axiosPublic.post(`${endpoints.VERIFY_OTP}`, {
+        email,
+        otp: currentOtp,
+      });
+      Alert.alert('Info', `Verification Successfull`, [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('SignIn'),
+        },
+      ]);
+    } catch (error) {
+      console.log('inside catch', error?.response);
+      Alert.alert(
+        'Information',
+        `Verification Failed Due To ${error?.response?.data?.otp}  \nPlease try again later`,
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -31,7 +65,7 @@ const SignIn = ({navigation}) => {
                 Verification Code
               </Text>
               <Text style={[styles.headingText, styles.headingText2]}>
-                {'Enter the verification code \nSent to your email'}
+                {`Enter the verification code \nSent to  ${email}`}
               </Text>
             </ImageBackground>
           </View>
@@ -41,8 +75,9 @@ const SignIn = ({navigation}) => {
           </View>
           <View style={styles.submitButtonConatiner}>
             <SubmitButton
-              onPress={() => navigation.navigate('SignIn')}
-              title="Reset"
+              title={isLoading ? 'Verifing' : 'Verify'}
+              onPress={handleVerifyOtp}
+              disabled={isLoading}
             />
           </View>
         </View>
