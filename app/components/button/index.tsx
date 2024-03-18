@@ -1,9 +1,9 @@
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 export default ({onPress = () => {}, title = '', disabled = false}) => {
   return (
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF3131',
     borderRadius: 5,
     padding: 15,
-    marginHorizontal: wp(6),
+    marginHorizontal: rw(6),
     shadowColor: '#FF31311A',
     shadowOpacity: 0.1,
     shadowOffset: {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,32 +15,91 @@ import {
 } from 'react-native-responsive-dimensions';
 import Button from '../button';
 import Dropdown from '../dropdown';
-interface CategoryItem {
-  label: string;
-  value: string;
+import {ProfessionalProfileData} from '../../hooks/useProfileData';
+import {fetchCategories} from '../../utils/api';
+import {experiencesList} from '../../constants';
+
+interface ProffesionalProfileFormProps {
+  initialValues: ProfessionalProfileData | null;
+  updateProfileData: (updatedData: any, isPersonal: boolean) => boolean;
 }
-const PersonalProfile: React.FC = () => {
-  const [category, setCategory] = useState<string | undefined>(undefined);
-  const [subCategory, setSubCategory] = useState<string | undefined>(undefined);
-  const [experience, setExperience] = useState<string | undefined>(undefined);
-  const [rate, setRate] = useState<string | undefined>(undefined);
-  const [skills, setSkills] = useState<string>('');
-  const [specialization, setSpecialization] = useState<string>('');
-  const [portfolio, setPortfolio] = useState<string | null>(null);
-  const handleFormSubmit = () => {};
-  const categories: CategoryItem[] = [
-    {label: 'IT & Software', value: 'it_software'},
-    {label: 'Design', value: 'design'},
-    // Add other categories as needed
-  ];
+const PersonalProfile: React.FC<ProffesionalProfileFormProps> = ({
+  initialValues,
+  updateProfileData,
+}) => {
+  const [category, setCategory] = useState<number | null>(
+    initialValues?.category_id!,
+  );
+  const [subCategory, setSubCategory] = useState<number | null>(
+    initialValues?.service_id!,
+  );
+  const [experience, setExperience] = useState<number | null>(
+    initialValues?.experience!,
+  );
+  const [rate, setRate] = useState<number | null>(initialValues?.rate!);
+  const [skills, setSkills] = useState<string | null>(initialValues?.skills!);
+  const [specialization, setSpecialization] = useState<string | null>(
+    initialValues?.specialization!,
+  );
+  const [portfolio, setPortfolio] = useState<string | null>(
+    initialValues?.portfolio!,
+  );
+  const [portfolioFile, setportfolioFile] = useState<{
+    name: string | null;
+    uri: string | null;
+    type: string | null;
+  } | null>(null);
+  const [categoriesList, setCategoriesList] = useState<any>([]);
+  const [subcategories, setSubcategories] = useState<any>([]);
+
+  const handleFormSubmit = async () => {
+    const updatedData = {
+      experience,
+      rate,
+      specialization,
+      portfolio: portfolioFile,
+      category_id: category,
+      service_id: subCategory,
+      skills,
+    };
+    const isPersonal = false;
+    // console.log(updatedData, 'updatedData');
+    const isSuccess = await updateProfileData(updatedData, isPersonal);
+    if (isSuccess) {
+      console.log('Profile updated successfully');
+    } else {
+      console.error('Failed to update profile');
+    }
+  };
+  const handleSubcategories = () => {
+    if (category && categoriesList.length > 0) {
+      let list = categoriesList?.find((c: any) => c?.id === category)!.services;
+      setSubcategories(list);
+    }
+  };
+  useEffect(() => {
+    const loadData = async () => {
+      const fetchedCategories = await fetchCategories();
+      setCategoriesList(() => fetchedCategories);
+      handleSubcategories();
+    };
+    loadData();
+  }, []);
+  useEffect(() => {
+    handleSubcategories();
+  }, [categoriesList.length]);
 
   const handleSelectPortfolioFile = async () => {
     try {
       const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
       });
-      // Assuming you want to store the URI of the first selected file
-      setPortfolio(result[0].uri);
+      setPortfolio(result[0].name);
+      setportfolioFile({
+        type: result[0].type,
+        name: result[0].name,
+        uri: result[0].uri,
+      });
     } catch (error) {
       if (DocumentPicker.isCancel(error)) {
         console.log('User canceled the picker');
@@ -49,35 +108,53 @@ const PersonalProfile: React.FC = () => {
       }
     }
   };
+
   return (
     <View style={styles.container}>
       <Dropdown
         label="Category"
         value={category}
-        setValue={setCategory}
-        list={categories}
+        setValue={value => {
+          setCategory(value as number);
+          let list = categoriesList.find((c: any) => c?.id === value)!
+            .services!;
+          console.log(list, 'services');
+
+          setSubcategories(list);
+        }}
+        list={categoriesList}
         placeholder="Choose a category"
       />
       <Dropdown
         label="Subcategory"
         value={subCategory}
-        setValue={setSubCategory}
-        list={categories}
+        setValue={value => {
+          setSubCategory(value as number);
+        }}
+        list={subcategories}
         placeholder="Choose a subcategory"
       />
       <Dropdown
         label="Experience"
-        value={experience}
-        setValue={setExperience}
-        list={categories}
+        value={experience as number}
+        setValue={value => {
+          setExperience(value as number);
+        }}
+        list={experiencesList}
         placeholder="Select experience"
       />
-      <Dropdown
-        label="Rate"
-        value={rate}
-        setValue={setRate}
-        list={categories}
-        placeholder="Select rate"
+
+      <Text style={styles.label}>Your Rate</Text>
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric" // Set keyboard type to numeric for better user experience
+        onChangeText={text => {
+          // Convert text back to number when changing, handle empty string as null
+          const newValue = text.length > 0 ? Number(text) : null;
+          setRate(newValue);
+        }}
+        value={rate !== null && rate !== undefined ? rate.toString() : ''} // Convert number to string or empty string if null
+        placeholder="Enter Rate"
       />
       <Text style={styles.label}>Add your Skills</Text>
       <TextInput
@@ -85,7 +162,7 @@ const PersonalProfile: React.FC = () => {
         numberOfLines={3}
         style={styles.input}
         onChangeText={setSkills}
-        value={skills}
+        value={skills as string}
         placeholder="Describe your skills"
       />
       <Text style={styles.label}>Portfolio</Text>
@@ -93,7 +170,7 @@ const PersonalProfile: React.FC = () => {
         style={styles.fileInput}
         onPress={handleSelectPortfolioFile}>
         <Text style={styles.fileInputText}>
-          {portfolio ? 'File selected' : 'Select a file'}
+          {portfolio ? portfolio : 'Select a file'}
         </Text>
         <Image
           source={require('../../assets/media-add.png')}
@@ -107,9 +184,13 @@ const PersonalProfile: React.FC = () => {
         numberOfLines={3}
         style={styles.input}
         onChangeText={setSpecialization}
-        value={specialization}
+        value={specialization as string}
         placeholder="Your specialization"
       />
+      <View style={styles.buttonContainer}>
+        {<Button title="Cancel" />}
+        <Button title="Update" onPress={handleFormSubmit} />
+      </View>
     </View>
   );
 };
@@ -155,5 +236,11 @@ const styles = StyleSheet.create({
     width: rw(5),
     height: rw(5),
     resizeMode: 'contain',
+  },
+  buttonContainer: {
+    marginVertical: rh(1),
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginHorizontal: rw(2),
   },
 });

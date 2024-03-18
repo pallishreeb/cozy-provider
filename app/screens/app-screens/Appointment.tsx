@@ -8,9 +8,9 @@ import {
   FlatList,
 } from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import Header from '../../components/header';
 import AppointmentCard from '../../components/appointmentCard';
@@ -69,13 +69,13 @@ const appointments = [
 ];
 
 const Appointment = ({navigation}) => {
-  const [showPastAppointments, setShowPastAppointments] = useState(false);
+  const [shorwastAppointments, setShorwastAppointments] = useState(false);
 
   // Function to filter appointments based on date
   const filteredAppointments = appointments.filter(appointment => {
     const appointmentDate = new Date(appointment.date);
     const currentDate = new Date();
-    return showPastAppointments
+    return shorwastAppointments
       ? appointmentDate < currentDate
       : appointmentDate >= currentDate;
   });
@@ -88,29 +88,29 @@ const Appointment = ({navigation}) => {
       <View style={styles.grayBar}></View>
       <View style={styles.toggleButtonsContainer}>
         <TouchableOpacity
-          onPress={() => setShowPastAppointments(false)}
+          onPress={() => setShorwastAppointments(false)}
           style={[
             styles.toggleButton,
-            !showPastAppointments && styles.toggleButtonActive,
+            !shorwastAppointments && styles.toggleButtonActive,
           ]}>
           <Text
             style={[
               styles.toggleButtonText,
-              !showPastAppointments && styles.toggleActiveButtonText,
+              !shorwastAppointments && styles.toggleActiveButtonText,
             ]}>
             Recent Appointments
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setShowPastAppointments(true)}
+          onPress={() => setShorwastAppointments(true)}
           style={[
             styles.toggleButton,
-            showPastAppointments && styles.toggleButtonActive,
+            shorwastAppointments && styles.toggleButtonActive,
           ]}>
           <Text
             style={[
               styles.toggleButtonText,
-              showPastAppointments && styles.toggleActiveButtonText,
+              shorwastAppointments && styles.toggleActiveButtonText,
             ]}>
             Past Appointments
           </Text>
@@ -140,44 +140,44 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContainer: {
-    paddingTop: hp(2),
-    paddingBottom: hp(4),
+    paddingTop: rh(2),
+    paddingBottom: rh(4),
   },
   flatListContentContainer: {
-    paddingBottom: hp(4),
+    paddingBottom: rh(4),
   },
   headerText1: {
-    fontSize: fp(2.8),
+    fontSize: rf(2.8),
     textTransform: 'uppercase',
     color: '#FF3131',
     fontWeight: 'bold',
-    marginLeft: wp(5),
-    marginTop: hp(2),
+    marginLeft: rw(5),
+    marginTop: rh(2),
   },
   headerText2: {
-    fontSize: fp(1.7),
+    fontSize: rf(1.7),
     textTransform: 'uppercase',
     color: '#5B5B5B',
-    marginLeft: wp(5),
-    marginVertical: hp(0.5),
+    marginLeft: rw(5),
+    marginVertical: rh(0.5),
   },
   grayBar: {
-    height: hp(0.2),
+    height: rh(0.2),
     backgroundColor: '#D3D3D3',
-    marginVertical: hp(1.7),
-    marginHorizontal: wp(1),
+    marginVertical: rh(1.7),
+    marginHorizontal: rw(1),
   },
   toggleButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: hp(1),
+    marginVertical: rh(1),
   },
   toggleButton: {
     borderWidth: 1,
     borderColor: '#E3E3E3',
-    paddingVertical: hp(1.5),
-    paddingHorizontal: wp(4),
-    marginHorizontal: wp(1),
+    paddingVertical: rh(1.5),
+    paddingHorizontal: rw(4),
+    marginHorizontal: rw(1),
   },
   toggleButtonActive: {
     backgroundColor: '#FF3131',

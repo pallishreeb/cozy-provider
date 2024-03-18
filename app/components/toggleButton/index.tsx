@@ -1,8 +1,8 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 type ToggleButtonProps = {
   isPersonal: boolean;
@@ -49,19 +49,19 @@ const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: hp(0.5),
-    marginBottom: hp(0.9),
-    marginHorizontal: wp(3.6),
+    marginTop: rh(0.5),
+    marginBottom: rh(0.9),
+    marginHorizontal: rw(3.6),
     backgroundColor: '#E0E0E0', // Light grey background for the toggle container
     borderRadius: 20,
     overflow: 'hidden', // Ensures the child elements do not overlap the container's rounded corners
-    // paddingVertical: fp(0.2),
-    // paddingHorizontal: fp(0.6),
+    // paddingVertical: rf(0.2),
+    // paddingHorizontal: rf(0.6),
   },
   toggleButton: {
     borderRadius: 20,
-    paddingVertical: hp(1),
-    paddingHorizontal: wp(5),
+    paddingVertical: rh(1),
+    paddingHorizontal: rw(5),
     flexGrow: 1, // Ensures the buttons take up equal space
     alignItems: 'center', // Centers the text horizontally
   },
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     fontWeight: 'bold',
-    fontSize: fp(1.8),
+    fontSize: rf(1.8),
   },
   toggleTextActive: {
     color: '#FFFFFF', // Active text color contrasts with its background

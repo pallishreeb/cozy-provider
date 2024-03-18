@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import Header from '../../components/header'; // Assuming you have a header component
 
@@ -112,25 +112,25 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   headerText1: {
-    fontSize: fp(2.8),
+    fontSize: rf(2.8),
     textTransform: 'uppercase',
     color: '#FF3131',
     fontWeight: 'bold',
-    marginLeft: wp(5),
-    marginTop: hp(2),
+    marginLeft: rw(5),
+    marginTop: rh(2),
   },
   headerText2: {
-    fontSize: fp(1.7),
+    fontSize: rf(1.7),
     textTransform: 'uppercase',
     color: '#5B5B5B',
-    marginLeft: wp(5),
-    marginVertical: hp(0.5),
+    marginLeft: rw(5),
+    marginVertical: rh(0.5),
   },
   grayBar: {
-    height: hp(0.2),
+    height: rh(0.2),
     backgroundColor: '#D3D3D3',
-    marginVertical: hp(1.7),
-    marginHorizontal: wp(1),
+    marginVertical: rh(1.7),
+    marginHorizontal: rw(1),
   },
   card: {
     flexDirection: 'row',
@@ -154,17 +154,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: fp(2.2),
+    fontSize: rf(2.2),
     fontWeight: 'bold',
     marginBottom: 5,
   },
   description: {
-    fontSize: fp(2),
+    fontSize: rf(2),
     color: '#333',
     marginBottom: 5,
   },
   timestamp: {
-    fontSize: fp(1.8),
+    fontSize: rf(1.8),
     color: '#666',
   },
   unreadIndicator: {

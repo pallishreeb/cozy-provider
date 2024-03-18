@@ -8,9 +8,9 @@ import {
   View,
 } from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import OtpInput from '../../components/otpInput';
@@ -51,7 +51,7 @@ const SignIn = ({navigation, route}) => {
         <StatusBar backgroundColor={'#FF3131'} barStyle="light-content" />
         <View
           style={{
-            height: hp(90),
+            height: rh(90),
             backgroundColor: 'white',
             borderBottomLeftRadius: 80,
             borderBottomRightRadius: 80,
@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF3131',
   },
   illustrationContainer: {
-    width: wp(100),
-    height: hp(30),
+    width: rw(100),
+    height: rh(30),
     backgroundColor: '#FF3130',
     alignSelf: 'center',
     alignItems: 'center',
@@ -115,15 +115,15 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 80,
   },
   illustrationImg: {
-    height: fp(30),
-    width: fp(30),
-    marginTop: hp(-3),
+    height: rf(30),
+    width: rf(30),
+    marginTop: rh(-3),
   },
 
   headingText: {
     textAlign: 'left',
-    top: fp(10),
-    left: fp(-6),
+    top: rf(10),
+    left: rf(-6),
     marginTop: 20,
     color: 'white',
   },
@@ -139,15 +139,15 @@ const styles = StyleSheet.create({
     marginTop: 5, // Add some space between the two texts
   },
   overlayView: {
-    width: wp(100),
-    height: hp(30),
+    width: rw(100),
+    height: rh(30),
     position: 'absolute',
     backgroundColor: '#FF3120',
     opacity: 0.7,
   },
   fieldContainer: {
     marginTop: 20,
-    marginHorizontal: wp(6),
+    marginHorizontal: rw(6),
   },
   label: {
     fontSize: 16,

@@ -8,9 +8,9 @@ import {
   Switch,
 } from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import Header from '../../components/header';
 import {Picker} from '@react-native-picker/picker';
@@ -19,18 +19,20 @@ const Home = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const [days, setDays] = useState([
-    {name: 'Monday', isEnabled: true, from: '', to: ''},
-    {name: 'Tuesday', isEnabled: true, from: '', to: ''},
-    {name: 'Wednesday', isEnabled: true, from: '', to: ''},
-    {name: 'Thursday', isEnabled: true, from: '', to: ''},
-    {name: 'Friday', isEnabled: true, from: '', to: ''},
-    {name: 'Saturday', isEnabled: false, from: '', to: ''},
-    {name: 'Sunday', isEnabled: false, from: '', to: ''},
+    {name: 'Mon', isEnabled: true, from: '', to: ''},
+    {name: 'Tue', isEnabled: true, from: '', to: ''},
+    {name: 'Wed', isEnabled: true, from: '', to: ''},
+    {name: 'Thu', isEnabled: true, from: '', to: ''},
+    {name: 'Fri', isEnabled: true, from: '', to: ''},
+    {name: 'Sat', isEnabled: false, from: '', to: ''},
+    {name: 'Sun', isEnabled: false, from: '', to: ''},
     // Add all days...
   ]);
   const hours = [
     {label: '9:00 AM', value: '9:00 AM'},
-    {label: '9:00 AM', value: '9:00 AM'},
+    {label: '10:00 AM', value: '10:00 AM'},
+    {label: '9:00 PM', value: '9:00 PM'},
+    {label: '10:00 PM', value: '10:00 PM'},
   ];
   const toggleDay = index => {
     const newDays = [...days];
@@ -41,19 +43,16 @@ const Home = () => {
     const updatedDays = days.map((day, i) =>
       i === index ? {...day, [type]: value} : day,
     );
-    setDays(updatedDays); // Assuming you have a state setter for your days array
+    setDays(updatedDays);
   };
-  // Placeholder for handling time selection
-  // const setTime = (index, time, timeType) => {
-  //   // Implementation depends on the type of picker you choose
-  // };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header />
       <ScrollView
         contentContainerStyle={{
-          paddingTop: hp(2),
-          paddingBottom: hp(2),
+          paddingTop: rh(2),
+          paddingBottom: rh(2),
         }}>
         <Text style={styles.headerText1}>
           <Text style={{color: '#333'}}>Set Your </Text> Business Hours
@@ -153,50 +152,50 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerText1: {
-    fontSize: fp(2.8),
+    fontSize: rf(2.8),
     textTransform: 'uppercase',
     color: '#FF3131',
     fontWeight: 'bold',
-    marginLeft: wp(5),
-    marginTop: hp(2),
+    marginLeft: rw(5),
+    marginTop: rh(2),
   },
   headerText2: {
-    fontSize: fp(1.7),
+    fontSize: rf(1.7),
     textTransform: 'uppercase',
     color: '#5B5B5B',
-    marginLeft: wp(5),
-    marginVertical: hp(0.5),
+    marginLeft: rw(5),
+    marginVertical: rh(0.5),
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: wp(5),
-    // marginTop: hp(1),
+    marginHorizontal: rw(5),
+    // marginTop: rh(1),
   },
   switchLabel: {
-    fontSize: fp(2),
+    fontSize: rf(2),
     color: '#333',
     textTransform: 'uppercase',
     fontWeight: 'bold',
   },
   subtitle: {
-    fontSize: fp(1.7),
+    fontSize: rf(1.7),
     color: '#5B5B5B',
-    marginLeft: wp(5),
-    marginTop: hp(1),
+    marginLeft: rw(5),
+    marginTop: rh(1),
   },
   grayBar: {
-    height: hp(0.2),
+    height: rh(0.2),
     backgroundColor: '#D3D3D3',
-    marginVertical: hp(1.7),
-    marginHorizontal: wp(1),
+    marginVertical: rh(1.7),
+    marginHorizontal: rw(1),
   },
   timePickerContainer: {
     flexDirection: 'column', // Change from row to column
     alignItems: 'center',
     marginVertical: 5,
-    width: wp(37),
+    width: rw(37),
     // Adjust width as necessary to fit your layout
   },
   timeLabel: {
@@ -216,8 +215,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: wp(3),
-    marginVertical: hp(1),
+    marginHorizontal: rw(3),
+    marginVertical: rh(1),
     flexWrap: 'wrap', // Allow items to wrap if necessary
   },
   dayName: {
@@ -232,8 +231,8 @@ const styles = StyleSheet.create({
   closedBox: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: wp(75), // Adjust the width to match your layout
-    height: hp(6), // Adjust the height as needed
+    width: rw(75), // Adjust the width to match your layout
+    height: rh(6), // Adjust the height as needed
     backgroundColor: '#D3D3D3',
     // A light gray background to resemble a disabled input
     borderRadius: 10,
@@ -241,7 +240,7 @@ const styles = StyleSheet.create({
   },
   closedText: {
     color: 'gray', // A dark gray color for the text
-    fontSize: fp(2),
+    fontSize: rf(2),
     fontWeight: '600',
     textTransform: 'capitalize',
   },

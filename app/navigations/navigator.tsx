@@ -22,6 +22,8 @@ export default () => {
   let loadAuthToken = async () => {
     try {
       const data = await AsyncStorage.getItem('@auth');
+      console.log(data, 'auth data');
+
       if (data != null) {
         const userData = JSON.parse(data);
         dispatch(setSignIn(userData));
@@ -36,7 +38,7 @@ export default () => {
   useEffect(() => {
     loadAuthToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, token]);
+  }, [dispatch, token, isLoggedIn]);
 
   axiosPrivate.interceptors.response.use(
     async function (response) {
@@ -45,6 +47,7 @@ export default () => {
     async function (error) {
       let res = error.response;
       if (res.status === 401 && res.config && !res.config.__isRetryRequest) {
+        console.log('401 error');
         await AsyncStorage.removeItem('@auth');
         dispatch(setSignOut());
       }

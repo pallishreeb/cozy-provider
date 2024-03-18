@@ -1,18 +1,35 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, SafeAreaView, ScrollView} from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import {
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../../redux/slices/authSlice';
+import useProfileData from '../../hooks/useProfileData';
 import Header from '../../components/header';
 import ToggleButton from '../../components/toggleButton';
 import PersonalProfile from '../../components/personalProfile';
 import ProfessionalProfile from '../../components/proffesionalProfile';
 import Button from '../../components/button';
+import Loader from '../../components/loader';
 const Profile = () => {
+  const {personalData, professionalData, isLoading, error, updateProfileData} =
+    useProfileData();
+
   const [isPersonal, setIsPersonal] = useState(true);
   const handleFormSubmit = () => {};
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Header />
@@ -26,11 +43,17 @@ const Profile = () => {
             ? 'Create Your Personal Profile'
             : 'Create Your Professional Profile'}
         </Text>
-        {isPersonal ? <PersonalProfile /> : <ProfessionalProfile />}
-        <View style={styles.buttonContainer}>
-          {<Button title="Cancel" />}
-          <Button title="Update" onPress={handleFormSubmit} />
-        </View>
+        {isPersonal ? (
+          <PersonalProfile
+            initialValues={personalData!}
+            updateProfileData={updateProfileData}
+          />
+        ) : (
+          <ProfessionalProfile
+            initialValues={professionalData}
+            updateProfileData={updateProfileData}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -43,28 +66,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContainer: {
-    paddingTop: hp(2),
-    paddingBottom: hp(4),
+    paddingTop: rh(2),
+    paddingBottom: rh(4),
   },
   headerText1: {
-    fontSize: fp(2.8),
+    fontSize: rf(2.8),
     textTransform: 'uppercase',
     color: '#FF3131',
     fontWeight: 'bold',
-    marginLeft: wp(5),
-    marginVertical: hp(0.6),
+    marginLeft: rw(5),
+    marginVertical: rh(0.6),
   },
   headerText2: {
-    fontSize: fp(1.7),
+    fontSize: rf(1.7),
     textTransform: 'uppercase',
     color: '#5B5B5B',
-    marginLeft: wp(5),
-    marginVertical: hp(0.5),
-  },
-  buttonContainer: {
-    marginVertical: hp(1),
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginHorizontal: wp(2),
+    marginLeft: rw(5),
+    marginVertical: rh(0.5),
   },
 });

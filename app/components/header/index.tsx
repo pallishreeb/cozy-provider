@@ -1,11 +1,4 @@
-import {
-  Image,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {Alert, Image, StatusBar, StyleSheet, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useDispatch} from 'react-redux';
@@ -13,9 +6,25 @@ import {remove} from '../../utils/storage';
 import {setSignOut} from '../../redux/slices/authSlice';
 export default ({handleNavigation = () => {}}) => {
   const dispatch = useDispatch();
-  let handleSignOut = () => {
-    remove('@auth');
-    dispatch(setSignOut());
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            remove('@auth');
+            dispatch(setSignOut());
+          },
+        },
+      ],
+      {cancelable: true},
+    );
   };
   return (
     <View style={styles.container}>

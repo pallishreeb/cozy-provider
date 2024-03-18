@@ -7,12 +7,12 @@ import {
   responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 interface ListItem {
-  label: string;
-  value: string;
+  id: number | string;
+  name: string;
 }
 interface Props {
-  value: string | undefined;
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  value: string | number | null;
+  setValue: (value: string | number) => void;
   list: Array<ListItem>;
   label: string;
   placeholder: string;
@@ -34,9 +34,9 @@ const Dropdown = ({value, setValue, list, label, placeholder}: Props) => {
           <Picker.Item label={placeholder} value={undefined} />
           {list?.map(category => (
             <Picker.Item
-              key={category.value}
-              label={category.label}
-              value={category.value}
+              key={category?.id}
+              label={category.name}
+              value={category.id}
             />
           ))}
         </Picker>

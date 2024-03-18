@@ -1,9 +1,9 @@
 import React from 'react';
 import {OtpInput} from 'react-native-otp-entry';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 export default ({
   setCurrentOtp,
@@ -20,15 +20,15 @@ export default ({
       onFilled={text => setCurrentOtp(text)}
       theme={{
         containerStyle: {
-          marginVertical: hp(3),
-          width: wp(90),
+          marginVertical: rh(3),
+          width: rw(90),
         },
         inputsContainerStyle: {},
         pinCodeContainerStyle: {
-          height: hp(5.5),
-          width: wp(14),
-          borderRadius: fp(0.5),
-          borderWidth: fp(0.1),
+          height: rh(5.5),
+          width: rw(14),
+          borderRadius: rf(0.5),
+          borderWidth: rf(0.1),
         },
       }}
     />
