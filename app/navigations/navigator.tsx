@@ -22,12 +22,12 @@ export default () => {
   let loadAuthToken = async () => {
     try {
       const data = await AsyncStorage.getItem('@auth');
-      console.log(data, 'auth data');
+      // console.log(data, 'auth data');
 
       if (data != null) {
         const userData = JSON.parse(data);
         dispatch(setSignIn(userData));
-        axiosPrivate.defaults.headers.common.Authorization = `Bearer ${token}`;
+        // axiosPrivate.defaults.headers.common.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
       // error reading value
@@ -38,8 +38,8 @@ export default () => {
   useEffect(() => {
     loadAuthToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, token, isLoggedIn]);
-
+  }, [token, isLoggedIn]);
+  axiosPrivate.defaults.headers.common.Authorization = `Bearer ${token}`;
   axiosPrivate.interceptors.response.use(
     async function (response) {
       return response;

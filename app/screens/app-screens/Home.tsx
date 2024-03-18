@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,46 +6,112 @@ import {
   SafeAreaView,
   ScrollView,
   Switch,
+  Alert,
 } from 'react-native';
+import {format} from 'date-fns';
 import {
   responsiveHeight as rh,
   responsiveWidth as rw,
   responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Header from '../../components/header';
-import {Picker} from '@react-native-picker/picker';
 import Button from '../../components/button';
+import useProfileData from '../../hooks/useProfileData';
+import {updateBusinessHours} from '../../utils/api';
+interface Day {
+  name: string;
+  isEnabled: boolean;
+  from: Date | null;
+  to: Date | null;
+}
+
+interface ShowPickerState {
+  visible: boolean;
+  index: number;
+  type: 'from' | 'to';
+}
 const Home = () => {
-  const [isEnabled, setIsEnabled] = useState(false);
+  const {professionalData, personalData} = useProfileData();
+
+  const [isEnabled, setIsEnabled] = useState<boolean | null>(null);
+
+  const [days, setDays] = useState<Day[]>([]);
+  const [showPicker, setShowPicker] = useState<ShowPickerState>({
+    visible: false,
+    index: -1,
+    type: 'from',
+  });
+
+  useEffect(() => {
+    if (professionalData?.business_hours_enabled !== undefined) {
+      setIsEnabled(professionalData.business_hours_enabled === 1);
+      if (professionalData?.working_hours) {
+        let daysString = JSON.parse(professionalData.working_hours);
+        let daysObject = JSON.parse(daysString);
+        let daysArray = JSON.parse(daysObject);
+        setDays(daysArray);
+      } else {
+        setDays([
+          {name: 'Mon', isEnabled: true, from: null, to: null},
+          {name: 'Tue', isEnabled: true, from: null, to: null},
+          {name: 'Wed', isEnabled: true, from: null, to: null},
+          {name: 'Thu', isEnabled: true, from: null, to: null},
+          {name: 'Fri', isEnabled: true, from: null, to: null},
+          {name: 'Sat', isEnabled: true, from: null, to: null},
+          {name: 'Sun', isEnabled: true, from: null, to: null},
+        ]);
+      }
+    }
+  }, [professionalData]);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  const [days, setDays] = useState([
-    {name: 'Mon', isEnabled: true, from: '', to: ''},
-    {name: 'Tue', isEnabled: true, from: '', to: ''},
-    {name: 'Wed', isEnabled: true, from: '', to: ''},
-    {name: 'Thu', isEnabled: true, from: '', to: ''},
-    {name: 'Fri', isEnabled: true, from: '', to: ''},
-    {name: 'Sat', isEnabled: false, from: '', to: ''},
-    {name: 'Sun', isEnabled: false, from: '', to: ''},
-    // Add all days...
-  ]);
-  const hours = [
-    {label: '9:00 AM', value: '9:00 AM'},
-    {label: '10:00 AM', value: '10:00 AM'},
-    {label: '9:00 PM', value: '9:00 PM'},
-    {label: '10:00 PM', value: '10:00 PM'},
-  ];
-  const toggleDay = index => {
+
+  const toggleDay = (index: number) => {
     const newDays = [...days];
     newDays[index].isEnabled = !newDays[index].isEnabled;
     setDays(newDays);
   };
-  const setDayTime = (index, type, value) => {
+
+  const setDayTime = (
+    event: any,
+    selectedDate: Date | undefined,
+    index: number,
+    type: 'from' | 'to',
+  ) => {
     const updatedDays = days.map((day, i) =>
-      i === index ? {...day, [type]: value} : day,
+      i === index ? {...day, [type]: selectedDate || day[type]} : day,
     );
     setDays(updatedDays);
+    // Ensure that the picker is closed after setting the time
+    if (event.type === 'set') {
+      // Check if the date was set before closing
+      setShowPicker({visible: false, index: -1, type: 'from'});
+    } else if (event.type === 'dismissed') {
+      // Check if the picker was dismissed
+      setShowPicker({visible: false, index: -1, type: 'from'});
+    }
   };
 
+  const showTimePicker = (index: number, type: 'from' | 'to') => {
+    setShowPicker({visible: true, index, type});
+  };
+
+  const handleUpdate = async () => {
+    const businessHoursEnabled = isEnabled as boolean;
+    const workingHours = JSON.stringify(days);
+
+    try {
+      await updateBusinessHours(
+        businessHoursEnabled,
+        JSON.stringify(workingHours),
+        personalData?.id!,
+      );
+      Alert.alert('Message', 'Business Hours Updated');
+    } catch (error) {
+      console.log(error, 'error in update buissnes hours');
+      Alert.alert('Message', 'Business Hours Updation Failed!');
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Header />
@@ -67,7 +133,7 @@ const Home = () => {
             thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
-            value={isEnabled}
+            value={isEnabled as boolean}
           />
         </View>
 
@@ -76,7 +142,7 @@ const Home = () => {
 
         {/* Gray Bar */}
         <View style={styles.grayBar}></View>
-        {days.map((day, index) => (
+        {days?.map((day, index) => (
           <View key={day.name} style={styles.dayRow}>
             <View style={{alignItems: 'center'}}>
               <Text style={styles.dayName}>{day.name}</Text>
@@ -88,48 +154,28 @@ const Home = () => {
 
             {day.isEnabled ? (
               <>
-                {/* Picker for "From" Time */}
-                <View style={styles.timePickerContainer}>
-                  <Text style={styles.timeLabel}>From</Text>
-                  <View style={styles.timePickerBox}>
-                    <Picker
-                      selectedValue={day.from}
-                      style={styles.timePicker}
-                      onValueChange={itemValue =>
-                        setDayTime(index, 'from', itemValue)
-                      }>
-                      {/* Dynamically render Picker.Items based on your hours array */}
-                      {hours.map((hour, hourIndex) => (
-                        <Picker.Item
-                          key={hourIndex}
-                          label={hour.label}
-                          value={hour.value}
-                        />
-                      ))}
-                    </Picker>
-                  </View>
-                </View>
-                {/* Picker for "To" Time */}
-                <View style={styles.timePickerContainer}>
-                  <Text style={styles.timeLabel}>To</Text>
-                  <View style={styles.timePickerBox}>
-                    <Picker
-                      selectedValue={day.to}
-                      style={styles.timePicker}
-                      onValueChange={itemValue =>
-                        setDayTime(index, 'to', itemValue)
-                      }>
-                      {/* Dynamically render Picker.Items based on your hours array */}
-                      {hours.map((hour, hourIndex) => (
-                        <Picker.Item
-                          key={hourIndex}
-                          label={hour.label}
-                          value={hour.value}
-                        />
-                      ))}
-                    </Picker>
-                  </View>
-                </View>
+                <Text
+                  style={styles.timePickerBox}
+                  onPress={() => showTimePicker(index, 'from')}>
+                  From: {day.from ? format(day.from, 'p') : 'N/A'}
+                </Text>
+                <Text
+                  style={styles.timePickerBox}
+                  onPress={() => showTimePicker(index, 'to')}>
+                  To: {day.to ? format(day.to, 'p') : 'N/A'}
+                </Text>
+
+                {showPicker.visible && showPicker.index === index && (
+                  <DateTimePicker
+                    value={new Date(days[index][showPicker.type])}
+                    mode="time"
+                    is24Hour={false} // Change this to false for AM/PM format
+                    display="default"
+                    onChange={(event, date) =>
+                      setDayTime(event, date, index, showPicker.type)
+                    }
+                  />
+                )}
               </>
             ) : (
               // Display "Closed" in a box that resembles an input
@@ -139,7 +185,7 @@ const Home = () => {
             )}
           </View>
         ))}
-        <Button title="Update" />
+        <Button title="Update" onPress={handleUpdate} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -191,26 +237,16 @@ const styles = StyleSheet.create({
     marginVertical: rh(1.7),
     marginHorizontal: rw(1),
   },
-  timePickerContainer: {
-    flexDirection: 'column', // Change from row to column
-    alignItems: 'center',
-    marginVertical: 5,
-    width: rw(37),
-    // Adjust width as necessary to fit your layout
-  },
-  timeLabel: {
-    fontSize: 16,
-    marginBottom: 5, // Adjust space between label and picker
-  },
-  timePicker: {
-    width: '100%', // Ensure picker uses full width of its container
-  },
-  timePickerBox: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#5B5B5B',
-    borderRadius: 10,
-  },
+
+  // timePickerBox: {
+  //   borderWidth: 1,
+  //   borderColor: '#ccc',
+  //   padding: 10,
+  //   borderRadius: 4,
+  //   marginBottom: 5,
+  //   minWidth: 100,
+  //   textAlign: 'center', // Ensure text is centered
+  // },
   dayRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -222,25 +258,31 @@ const styles = StyleSheet.create({
   dayName: {
     // Style for the day name text
   },
-  dropdown: {
-    // Basic styling for dropdown placeholder
+
+  timePickerBox: {
     borderWidth: 1,
-    borderColor: 'gray',
-    padding: 10,
+    borderColor: '#ccc',
+    paddingVertical: rh(1), // Adjust vertical padding
+    paddingHorizontal: rw(2), // Adjust horizontal padding
+    borderRadius: rw(2), // Adjust border radius
+    marginBottom: rh(1), // Adjust margin bottom
+    minWidth: rw(38), // Adjust minimum width
+    textAlign: 'center', // Ensure text is centered
+    justifyContent: 'center', // Center content vertically for View
+    alignItems: 'center', // Center content horizontally for View
   },
   closedBox: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: rw(75), // Adjust the width to match your layout
-    height: rh(6), // Adjust the height as needed
-    backgroundColor: '#D3D3D3',
-    // A light gray background to resemble a disabled input
-    borderRadius: 10,
-    borderWidth: 0, // Match the borderRadius of your input boxes
+    width: rw(75), // Adjust the width based on your layout needs
+    height: rh(5), // Adjust the height as needed
+    backgroundColor: '#D3D3D3', // A light gray background to resemble a disabled input
+    borderRadius: rw(2), // Adjust border radius to match your input boxes
+    borderWidth: 0, // Match the border width of your design
   },
   closedText: {
     color: 'gray', // A dark gray color for the text
-    fontSize: rf(2),
+    fontSize: rf(2), // Adjust font size responsively
     fontWeight: '600',
     textTransform: 'capitalize',
   },

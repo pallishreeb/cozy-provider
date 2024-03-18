@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Text,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -82,17 +83,15 @@ const PersonalProfile: React.FC<PersonalProfileFormProps> = ({
       state,
       country,
     };
-
     // Assuming you have a function similar to `updateProfileData` that
     // updates the profile data and returns a boolean indicating success/failure.
     const isSuccess = await updateProfileData(updatedData, true);
-
     if (isSuccess) {
-      // Handle successful update
-      console.log('Profile updated successfully');
+      // console.log('Profile updated successfully');
+      Alert.alert('Message', 'Profile updated successfully');
     } else {
-      // Handle update failure
-      console.error('Failed to update profile');
+      // console.error('Failed to update profile');
+      Alert.alert('Message', 'Failed to update profile');
     }
   };
   return (

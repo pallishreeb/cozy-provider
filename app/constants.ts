@@ -10,6 +10,7 @@ export const endpoints = {
   UPDATE_BUSINESS_PROFILE: 'provider/update-business-profile',
   CATEGORIES: 'categories',
   SERVICES: 'services',
+  UPDATE_BUSINESS_HOURS: 'provider/update-business-hours',
 };
 export const experiencesList = [
   {id: 1, name: '0-1 Years'},

@@ -75,7 +75,7 @@ const SignIn = ({navigation}) => {
         email,
         password,
       });
-      console.log('login response', response?.data);
+      // console.log('login response', response?.data);
       dispatch(setSignIn(response?.data));
       await AsyncStorage.setItem('@auth', JSON.stringify(response?.data));
     } catch (error) {

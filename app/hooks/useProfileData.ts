@@ -40,9 +40,11 @@ const useProfileData = () => {
   const fetchProfileData = async () => {
     setIsLoading(true);
     try {
+      // console.log(axiosPrivate.head, 'axios');
+
       const response = await axiosPrivate.get(`${endpoints.GET_PROFILE}`);
       const data = response?.data?.provider;
-      console.log(data, 'provider ');
+      // console.log(data, 'provider ');
 
       setPersonalData({
         id: data.id,

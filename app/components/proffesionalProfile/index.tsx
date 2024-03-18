@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Text,
+  Alert,
 } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import {
@@ -66,9 +67,11 @@ const PersonalProfile: React.FC<ProffesionalProfileFormProps> = ({
     // console.log(updatedData, 'updatedData');
     const isSuccess = await updateProfileData(updatedData, isPersonal);
     if (isSuccess) {
-      console.log('Profile updated successfully');
+      // console.log('Profile updated successfully');
+      Alert.alert('Message', 'Profile updated successfully');
     } else {
-      console.error('Failed to update profile');
+      // console.error('Failed to update profile');
+      Alert.alert('Message', 'Failed to update profile');
     }
   };
   const handleSubcategories = () => {

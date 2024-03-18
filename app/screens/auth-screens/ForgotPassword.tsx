@@ -55,7 +55,7 @@ const SignIn = ({navigation}) => {
       const response = await axiosPublic.post(`${endpoints.FORGOT_PASSWORD}`, {
         email,
       });
-      console.log('login response', response?.data);
+      // console.log('forgot pass response', response?.data);
       Alert.alert('Info', `${response?.data?.message}`, [
         {
           text: 'OK',
