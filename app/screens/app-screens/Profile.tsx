@@ -26,7 +26,6 @@ const Profile = () => {
     useProfileData();
 
   const [isPersonal, setIsPersonal] = useState(true);
-  const handleFormSubmit = () => {};
   if (isLoading) {
     return <Loader />;
   }

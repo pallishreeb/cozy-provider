@@ -12,6 +12,7 @@ export const endpoints = {
   SERVICES: 'services',
   UPDATE_BUSINESS_HOURS: 'provider/update-business-hours',
 };
+export const IMAGE_URL = 'http://10.0.2.2:8000';
 export const experiencesList = [
   {id: 1, name: '0-1 Years'},
   {id: 2, name: '1-2 Years'},

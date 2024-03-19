@@ -191,7 +191,6 @@ const PersonalProfile: React.FC<ProffesionalProfileFormProps> = ({
         placeholder="Your specialization"
       />
       <View style={styles.buttonContainer}>
-        {<Button title="Cancel" />}
         <Button title="Update" onPress={handleFormSubmit} />
       </View>
     </View>
@@ -242,8 +241,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginVertical: rh(1),
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginHorizontal: rw(2),
+    // flexDirection: 'row',
+    // justifyContent: 'flex-end',
+    // marginHorizontal: rw(2),
   },
 });

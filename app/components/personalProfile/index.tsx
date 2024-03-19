@@ -16,12 +16,9 @@ import {
   responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import ProfileInput from '../profileInput';
-import {
-  PersonalProfileData,
-  ProfessionalProfileData,
-} from '../../hooks/useProfileData';
+import {PersonalProfileData} from '../../hooks/useProfileData';
 import Button from '../button';
-
+import {IMAGE_URL} from '../../constants';
 interface PersonalProfileFormProps {
   initialValues: PersonalProfileData;
   updateProfileData: (
@@ -103,7 +100,7 @@ const PersonalProfile: React.FC<PersonalProfileFormProps> = ({
               source={{
                 uri: profilePicFile
                   ? profilePicFile.uri
-                  : `http://10.0.2.2:8000/profile_pic/${profileImage}`,
+                  : `${IMAGE_URL}/profile_pic/${profileImage}`,
               }}
               style={styles.profileImage}
             />
@@ -185,7 +182,6 @@ const PersonalProfile: React.FC<PersonalProfileFormProps> = ({
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        {<Button title="Cancel" />}
         <Button title="Update" onPress={handleFormSubmit} />
       </View>
     </View>
@@ -255,8 +251,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginVertical: rh(1),
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginHorizontal: rw(2),
+    // flexDirection: 'row',
+    // justifyContent: 'flex-end',
+    // marginHorizontal: rw(2),
   },
 });

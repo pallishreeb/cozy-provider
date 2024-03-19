@@ -121,14 +121,17 @@ const Appointment = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <FlatList
+      <Text style={styles.headerText1}>
+        <Text style={{color: '#333'}}>Your</Text> Appointments
+      </Text>
+      {/* <FlatList
         data={filteredAppointments}
         renderItem={({item}) => <AppointmentCard appointment={item} />}
         keyExtractor={item => item.id.toString()}
         ListHeaderComponent={renderHeader}
         // Add padding at the bottom to ensure nothing is cut off
         contentContainerStyle={styles.flatListContentContainer}
-      />
+      /> */}
     </SafeAreaView>
   );
 };
