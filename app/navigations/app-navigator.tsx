@@ -4,7 +4,7 @@ import MyTabs from './bottom-navigator';
 import Chat from '../screens/app-screens/Chat';
 export type AppStackParamList = {
   MyTabs: undefined;
-  Chat: undefined;
+  Chat: {user: any; provider: any};
 };
 const Stack = createNativeStackNavigator<AppStackParamList>();
 

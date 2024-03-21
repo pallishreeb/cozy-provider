@@ -3,6 +3,7 @@ import {
   Image,
   StatusBar,
   StyleSheet,
+  Text, // Import Text from 'react-native'
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -12,7 +13,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useDispatch} from 'react-redux';
 import {remove} from '../../utils/storage';
 import {setSignOut} from '../../redux/slices/authSlice';
-export default ({onBackPress = () => {}, isChatScreen = false}) => {
+
+export default ({onBackPress = () => {}, isChatScreen = false, user = {}}) => {
   const dispatch = useDispatch();
   const handleSignOut = () => {
     Alert.alert(
@@ -34,13 +36,16 @@ export default ({onBackPress = () => {}, isChatScreen = false}) => {
       {cancelable: true},
     );
   };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={'#FF3131'} barStyle="light-content" />
       <View style={styles.topHeaderConatiner}>
         {isChatScreen && (
-          <TouchableOpacity onPress={onBackPress}>
-            <Icon name="arrow-back" size={rf(2.5)} color="#FFF" />
+          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+            <Icon name="arrow-back" size={rf(3)} color="#FFF" />
+            {/* Display the user's name next to the back button if isChatScreen is true */}
+            <Text style={styles.userName}>{user.name}</Text>
           </TouchableOpacity>
         )}
 
@@ -48,17 +53,15 @@ export default ({onBackPress = () => {}, isChatScreen = false}) => {
           <Image
             source={require('../../assets/header-image.png')}
             resizeMode={'stretch'}
-            style={{
-              width: 70,
-              height: 32,
-            }}
+            style={styles.headerImage}
           />
         )}
         <Icon
           name="logout"
-          size={rf(2.5)}
+          size={rf(3)}
           color={'white'}
           onPress={handleSignOut}
+          style={styles.logoutIcon}
         />
       </View>
     </View>
@@ -75,5 +78,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginHorizontal: 21,
+  },
+  backButton: {
+    flexDirection: 'row', // Ensure the back button and the user name are in a row
+    alignItems: 'center', // Center items vertically
+  },
+  userName: {
+    color: 'white',
+    fontSize: rf(2.2),
+    marginLeft: 10, // Add some spacing between the back button and the user name
+  },
+  headerImage: {
+    width: 70,
+    height: 32,
+  },
+  logoutIcon: {
+    // If you need to apply specific styles to the logout icon, do it here
   },
 });

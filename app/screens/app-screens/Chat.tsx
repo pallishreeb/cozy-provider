@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -18,43 +18,73 @@ import {
 import Header from '../../components/header';
 import {AppStackParamList} from '../../navigations/app-navigator';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {db} from '../../firebase';
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+} from 'firebase/firestore';
 
-// Example messages data
-const initialMessages = [
-  {id: '1', text: 'Hello there!', isUser: false, time: '10:45 AM'},
-  {
-    id: '2',
-    text: 'Hi! How can I help you today?',
-    isUser: true,
-    time: '10:46 AM',
-  },
-  // Add more messages here
-];
 type ChatScreenProps = NativeStackScreenProps<AppStackParamList, 'Chat'>;
 
-const Chat = ({navigation}: ChatScreenProps) => {
-  const [messages, setMessages] = useState(initialMessages);
+const Chat = ({navigation, route}: ChatScreenProps) => {
+  const {user, provider} = route.params;
   const [text, setText] = useState('');
+  const [messages, setMessages] = useState([]);
+  let userId = user?.id && user?.name + user?.id;
+  let providerId = provider?.id && provider?.name + provider?.id;
+  let serviceId = provider?.service_id;
+  const chatId =
+    userId && providerId
+      ? [userId, providerId, serviceId].sort().join('-')
+      : null;
 
-  const sendMessage = () => {
-    if (text.trim().length > 0) {
-      const newMessage = {
-        id: Date.now().toString(),
-        text,
-        isUser: true,
-        time: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-      };
-      setMessages([...messages, newMessage]);
+  useEffect(() => {
+    if (!chatId) return;
+
+    const messagesRef = collection(db, 'Chats', chatId, 'messages');
+    const q = query(messagesRef, orderBy('createdAt', 'asc'));
+
+    const unsubscribe = onSnapshot(q, querySnapshot => {
+      const msgs = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setMessages(msgs);
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
+
+  const sendMessage = async () => {
+    if (text.trim().length === 0 || !chatId) return;
+
+    const time = new Date();
+    const userMsg = {
+      text: text,
+      provider: provider?.id,
+      user: user?.id,
+      createdAt: time,
+    };
+
+    try {
+      const docRef = collection(db, 'Chats', chatId, 'messages');
+      await addDoc(docRef, userMsg);
       setText('');
+    } catch (error) {
+      console.error('Error sending message: ', error);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} isChatScreen={true} />
+      <Header
+        onBackPress={() => navigation.goBack()}
+        isChatScreen={true}
+        user={user}
+      />
       <FlatList
         data={messages}
         keyExtractor={item => item.id}
@@ -62,10 +92,15 @@ const Chat = ({navigation}: ChatScreenProps) => {
           <View
             style={[
               styles.messageBubble,
-              item.isUser ? styles.userMessage : styles.otherMessage,
+              item?.provider === provider.id
+                ? styles.userMessage
+                : styles.otherMessage,
             ]}>
             <Text style={styles.messageText}>{item.text}</Text>
-            <Text style={styles.messageTime}>{item.time}</Text>
+
+            <Text style={styles.messageTime}>
+              {item.createdAt?.toDate().toLocaleTimeString()}
+            </Text>
           </View>
         )}
         contentContainerStyle={styles.flatListContentContainer}
@@ -88,6 +123,8 @@ const Chat = ({navigation}: ChatScreenProps) => {
 };
 
 export default Chat;
+
+// Your existing styles remain unchanged.
 
 const styles = StyleSheet.create({
   container: {

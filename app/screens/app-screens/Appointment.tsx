@@ -129,7 +129,12 @@ const Appointment = ({navigation}: AppointmentScreenProps) => {
               cancelAppointment(item?.id);
               refreshAppointments();
             }}
-            onChat={() => navigation.navigate('Chat')}
+            onChat={() =>
+              navigation.navigate('Chat', {
+                user: item.user,
+                provider: item.provider,
+              })
+            }
           />
         )}
         keyExtractor={item => item?.id?.toString()}
