@@ -17,14 +17,21 @@ import OtpInput from '../../components/otpInput';
 import SubmitButton from '../../components/button';
 import {axiosPublic} from '../../utils/axiosConfig';
 import {endpoints} from '../../constants';
-const SignIn = ({navigation, route}) => {
-  const {email, previousRoute} = route.params;
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigations/auth-navigator';
+type VerificationCodeScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'VerificationCode'
+>;
+const VerificationCode = ({navigation, route}: VerificationCodeScreenProps) => {
+  const {email} = route.params;
   const [currentOtp, setCurrentOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const handleVerifyOtp = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosPublic.post(`${endpoints.VERIFY_OTP}`, {
+      // const response =
+      await axiosPublic.post(`${endpoints.VERIFY_OTP}`, {
         email,
         otp: currentOtp,
       });
@@ -34,7 +41,7 @@ const SignIn = ({navigation, route}) => {
           onPress: () => navigation.navigate('SignIn'),
         },
       ]);
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log('inside catch', error?.response);
       Alert.alert(
         'Information',
@@ -96,7 +103,7 @@ const SignIn = ({navigation, route}) => {
   );
 };
 
-export default SignIn;
+export default VerificationCode;
 
 const styles = StyleSheet.create({
   mainContainer: {

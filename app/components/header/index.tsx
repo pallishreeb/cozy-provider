@@ -1,10 +1,18 @@
-import {Alert, Image, StatusBar, StyleSheet, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {responsiveFontSize as rf} from 'react-native-responsive-dimensions';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useDispatch} from 'react-redux';
 import {remove} from '../../utils/storage';
 import {setSignOut} from '../../redux/slices/authSlice';
-export default ({handleNavigation = () => {}}) => {
+export default ({onBackPress = () => {}, isChatScreen = false}) => {
   const dispatch = useDispatch();
   const handleSignOut = () => {
     Alert.alert(
@@ -30,19 +38,25 @@ export default ({handleNavigation = () => {}}) => {
     <View style={styles.container}>
       <StatusBar backgroundColor={'#FF3131'} barStyle="light-content" />
       <View style={styles.topHeaderConatiner}>
-        <View></View>
+        {isChatScreen && (
+          <TouchableOpacity onPress={onBackPress}>
+            <Icon name="arrow-back" size={rf(2.5)} color="#FFF" />
+          </TouchableOpacity>
+        )}
 
-        <Image
-          source={require('../../assets/header-image.png')}
-          resizeMode={'stretch'}
-          style={{
-            width: 70,
-            height: 32,
-          }}
-        />
+        {!isChatScreen && (
+          <Image
+            source={require('../../assets/header-image.png')}
+            resizeMode={'stretch'}
+            style={{
+              width: 70,
+              height: 32,
+            }}
+          />
+        )}
         <Icon
-          name="sign-out"
-          size={25}
+          name="logout"
+          size={rf(2.5)}
           color={'white'}
           onPress={handleSignOut}
         />

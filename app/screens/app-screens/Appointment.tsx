@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
+  Image,
 } from 'react-native';
 import {
   responsiveHeight as rh,
@@ -14,71 +15,38 @@ import {
 } from 'react-native-responsive-dimensions';
 import Header from '../../components/header';
 import AppointmentCard from '../../components/appointmentCard';
-
-// Sample appointments array including both past and future dates
-const appointments = [
-  {
-    id: 1,
-    providerImage: 'https://via.placeholder.com/150',
-    providerName: 'John Doe',
-    location: 'New York',
-    date: '2024-03-20',
-    time: '2:00 PM',
-  },
-  {
-    id: 2,
-    providerImage: 'https://via.placeholder.com/150',
-    providerName: 'Jane Smith',
-    location: 'Los Angeles',
-    date: '2024-03-22',
-    time: '4:00 PM',
-  },
-  // Assuming the current date is close to the dates above, add some past appointments
-  {
-    id: 3,
-    providerImage: 'https://via.placeholder.com/150',
-    providerName: 'Michael Brown',
-    location: 'Chicago',
-    date: '2023-12-15',
-    time: '1:00 PM',
-  },
-  {
-    id: 4,
-    providerImage: 'https://via.placeholder.com/150',
-    providerName: 'Sarah Connor',
-    location: 'San Francisco',
-    date: '2023-11-10',
-    time: '3:30 PM',
-  },
-  {
-    id: 5,
-    providerImage: 'https://via.placeholder.com/150',
-    providerName: 'Sarah Gregor',
-    location: 'San Francisco',
-    date: '2023-11-10',
-    time: '3:30 PM',
-  },
-  {
-    id: 6,
-    providerImage: 'https://via.placeholder.com/150',
-    providerName: 'Micheal Greg',
-    location: 'Las Vegas',
-    date: '2023-11-10',
-    time: '3:30 PM',
-  },
-];
-
-const Appointment = ({navigation}) => {
-  const [shorwastAppointments, setShorwastAppointments] = useState(false);
-
-  // Function to filter appointments based on date
-  const filteredAppointments = appointments.filter(appointment => {
-    const appointmentDate = new Date(appointment.date);
-    const currentDate = new Date();
-    return shorwastAppointments
-      ? appointmentDate < currentDate
-      : appointmentDate >= currentDate;
-  });
+import useProfileData from '../../hooks/useProfileData';
+import useAppointments from '../../hooks/useAppointments';
+import {useFocusEffect} from '@react-navigation/native';
+import Loader from '../../components/loader';
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import {BottomTabParamList} from '../../navigations/bottom-navigator';
+type AppointmentScreenProps = BottomTabScreenProps<
+  BottomTabParamList,
+  'Appointment'
+>;
+const Appointment = ({navigation}: AppointmentScreenProps) => {
+  const [showPastAppointments, setShowPastAppointments] = useState(false);
+  const {
+    personalData: profileData,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useProfileData();
+  const {
+    appointments,
+    isLoading,
+    error,
+    refreshAppointments,
+    cancelAppointment,
+    completeAppointment,
+  } = useAppointments(profileData?.id!, showPastAppointments);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (profileData?.id) {
+        refreshAppointments();
+      }
+    }, [showPastAppointments, profileData?.id!]),
+  );
   const renderHeader = () => (
     <>
       <Text style={styles.headerText1}>
@@ -88,50 +56,93 @@ const Appointment = ({navigation}) => {
       <View style={styles.grayBar}></View>
       <View style={styles.toggleButtonsContainer}>
         <TouchableOpacity
-          onPress={() => setShorwastAppointments(false)}
+          onPress={() => setShowPastAppointments(false)}
           style={[
             styles.toggleButton,
-            !shorwastAppointments && styles.toggleButtonActive,
+            !showPastAppointments && styles.toggleButtonActive,
           ]}>
           <Text
             style={[
               styles.toggleButtonText,
-              !shorwastAppointments && styles.toggleActiveButtonText,
+              !showPastAppointments && styles.toggleActiveButtonText,
             ]}>
             Recent Appointments
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setShorwastAppointments(true)}
+          onPress={() => setShowPastAppointments(true)}
           style={[
             styles.toggleButton,
-            shorwastAppointments && styles.toggleButtonActive,
+            showPastAppointments && styles.toggleButtonActive,
           ]}>
           <Text
             style={[
               styles.toggleButtonText,
-              shorwastAppointments && styles.toggleActiveButtonText,
+              showPastAppointments && styles.toggleActiveButtonText,
             ]}>
-            Past Appointments
+            All Appointments
           </Text>
         </TouchableOpacity>
       </View>
     </>
   );
+  const getContent = () => {
+    if (isLoading || profileLoading) {
+      return <Loader />;
+    }
+
+    if (error || profileError) {
+      return (
+        <Text style={styles.errorText}>
+          Error:{' '}
+          {profileError || error?.message || 'An Unexpected Error occurred!'}
+        </Text>
+      );
+    }
+
+    if (appointments.length === 0) {
+      return (
+        <View style={styles.noResultsContainer}>
+          <Image
+            source={require('../../assets/no-result.png')}
+            style={styles.noResultsImage}
+          />
+          <Text style={styles.noResultsText}>
+            No {showPastAppointments ? 'appointments' : 'recent appointments'}{' '}
+            found
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        data={appointments}
+        renderItem={({item}) => (
+          <AppointmentCard
+            appointment={item}
+            onComplete={() => {
+              completeAppointment(item?.id);
+              refreshAppointments();
+            }}
+            onCancel={() => {
+              cancelAppointment(item?.id);
+              refreshAppointments();
+            }}
+            onChat={() => navigation.navigate('Chat')}
+          />
+        )}
+        keyExtractor={item => item?.id?.toString()}
+        contentContainerStyle={styles.flatListContentContainer}
+      />
+    );
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <Text style={styles.headerText1}>
-        <Text style={{color: '#333'}}>Your</Text> Appointments
-      </Text>
-      {/* <FlatList
-        data={filteredAppointments}
-        renderItem={({item}) => <AppointmentCard appointment={item} />}
-        keyExtractor={item => item.id.toString()}
-        ListHeaderComponent={renderHeader}
-        // Add padding at the bottom to ensure nothing is cut off
-        contentContainerStyle={styles.flatListContentContainer}
-      /> */}
+
+      {renderHeader()}
+      {getContent()}
     </SafeAreaView>
   );
 };
@@ -192,5 +203,27 @@ const styles = StyleSheet.create({
   },
   toggleActiveButtonText: {
     color: '#fff',
+  },
+  noResultsContainer: {
+    flex: 1,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: rw(10),
+  },
+  noResultsImage: {
+    width: rw(60),
+    height: rh(40),
+    resizeMode: 'contain',
+  },
+  noResultsText: {
+    // marginTop: rh(1),
+    fontSize: rf(2.2),
+    color: '#5B5B5B',
+  },
+  errorText: {
+    fontSize: rf(2),
+    color: 'red',
+    textAlign: 'center',
+    marginTop: rh(20),
   },
 });

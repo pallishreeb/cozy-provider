@@ -16,15 +16,16 @@ import {
   responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import ProfileInput from '../profileInput';
-import {PersonalProfileData} from '../../hooks/useProfileData';
+
 import Button from '../button';
 import {IMAGE_URL} from '../../constants';
+import {PersonalProfileData} from '../../types';
 interface PersonalProfileFormProps {
   initialValues: PersonalProfileData;
   updateProfileData: (
-    updatedData: PersonalProfileData,
+    updatedData: any,
     isPersonal: boolean,
-  ) => boolean;
+  ) => Promise<boolean>;
   // onSubmit: (values: PersonalProfileData) => void;
 }
 

@@ -17,7 +17,13 @@ import Input from '../../components/input';
 import SubmitButton from '../../components/button';
 import {axiosPublic} from '../../utils/axiosConfig';
 import {endpoints} from '../../constants';
-const SignIn = ({navigation}) => {
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigations/auth-navigator';
+type ForgotPasswordScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'ForgotPassword'
+>;
+const SignIn = ({navigation}: ForgotPasswordScreenProps) => {
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState<{
     email: string | null;
@@ -62,7 +68,7 @@ const SignIn = ({navigation}) => {
           onPress: () => navigation.navigate('ResetPassword', {email}),
         },
       ]);
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log('inside catch', error?.response);
     } finally {
       setIsLoading(false);

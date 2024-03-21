@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MyTabs from './bottom-navigator';
-import Header from '../components/header';
+import Chat from '../screens/app-screens/Chat';
 export type AppStackParamList = {
   MyTabs: undefined;
+  Chat: undefined;
 };
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -20,6 +21,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="MyTabs"
         component={MyTabs}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={Chat}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

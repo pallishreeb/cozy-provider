@@ -19,7 +19,10 @@ import Input from '../../components/input';
 import SubmitButton from '../../components/button';
 import {axiosPublic} from '../../utils/axiosConfig';
 import {endpoints} from '../../constants';
-const SignIn = ({navigation}) => {
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigations/auth-navigator';
+type SignUpScreenProps = NativeStackScreenProps<AuthStackParamList, 'SignUp'>;
+const SignUp = ({navigation}: SignUpScreenProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -111,7 +114,7 @@ const SignIn = ({navigation}) => {
             }),
         },
       ]);
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log('inside catch', error.response);
       Alert.alert('Information', `Sign Up failed \nPlease try again later`);
     } finally {
@@ -216,7 +219,7 @@ const SignIn = ({navigation}) => {
   );
 };
 
-export default SignIn;
+export default SignUp;
 
 const styles = StyleSheet.create({
   mainContainer: {

@@ -16,13 +16,16 @@ import {
 } from 'react-native-responsive-dimensions';
 import Button from '../button';
 import Dropdown from '../dropdown';
-import {ProfessionalProfileData} from '../../hooks/useProfileData';
 import {fetchCategories} from '../../utils/api';
 import {experiencesList} from '../../constants';
+import {ProfessionalProfileData} from '../../types';
 
 interface ProffesionalProfileFormProps {
   initialValues: ProfessionalProfileData | null;
-  updateProfileData: (updatedData: any, isPersonal: boolean) => boolean;
+  updateProfileData: (
+    updatedData: any,
+    isPersonal: boolean,
+  ) => Promise<boolean>;
 }
 const PersonalProfile: React.FC<ProffesionalProfileFormProps> = ({
   initialValues,
@@ -90,7 +93,7 @@ const PersonalProfile: React.FC<ProffesionalProfileFormProps> = ({
   }, []);
   useEffect(() => {
     handleSubcategories();
-  }, [categoriesList.length]);
+  }, [categoriesList?.length]);
 
   const handleSelectPortfolioFile = async () => {
     try {

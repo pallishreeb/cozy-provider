@@ -11,6 +11,10 @@ export const endpoints = {
   CATEGORIES: 'categories',
   SERVICES: 'services',
   UPDATE_BUSINESS_HOURS: 'provider/update-business-hours',
+  PROVIDER_BOOKINGS: 'bookings/provider',
+  PROVIDER_PENDING_BOOKINGS: 'bookings/provider/pending',
+  CANCEL_BOOKING: 'bookings',
+  COMPLETE_BOOKING: 'bookings/complete',
 };
 export const IMAGE_URL = 'http://10.0.2.2:8000';
 export const experiencesList = [

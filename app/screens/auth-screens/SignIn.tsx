@@ -21,7 +21,10 @@ import {endpoints} from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import {setSignIn} from '../../redux/slices/authSlice';
-const SignIn = ({navigation}) => {
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigations/auth-navigator';
+type SignInScreenProps = NativeStackScreenProps<AuthStackParamList, 'SignIn'>;
+const SignIn = ({navigation}: SignInScreenProps) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -78,7 +81,7 @@ const SignIn = ({navigation}) => {
       // console.log('login response', response?.data);
       dispatch(setSignIn(response?.data));
       await AsyncStorage.setItem('@auth', JSON.stringify(response?.data));
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log('inside catch', error?.response);
       Alert.alert(
         'Error',

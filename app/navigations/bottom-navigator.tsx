@@ -1,5 +1,4 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-const Tab = createBottomTabNavigator();
 import Home from '../screens/app-screens/Home';
 import Notification from '../screens/app-screens/Notification';
 import Appointment from '../screens/app-screens/Appointment';
@@ -8,9 +7,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {Text} from 'react-native';
 import {
   responsiveHeight as hp,
-  responsiveWidth as wp,
+  // responsiveWidth as wp,
   responsiveFontSize as fp,
 } from 'react-native-responsive-dimensions';
+export type BottomTabParamList = {
+  Home: undefined;
+  Appointment: undefined;
+  Notification: undefined;
+  Profile: undefined;
+};
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 export default function MyTabs() {
   return (
     <Tab.Navigator
@@ -28,7 +34,7 @@ export default function MyTabs() {
           color: 'white',
           paddingBottom: hp(1),
         },
-        tabBarIcon: ({focused}) => {
+        tabBarIcon: ({}) => {
           let iconName = 'question';
 
           if (route.name === 'Home') {
@@ -45,7 +51,7 @@ export default function MyTabs() {
 
           return <Icon name={iconName} size={22} color={'white'} />;
         },
-        tabBarLabel: ({focused}) => {
+        tabBarLabel: ({}) => {
           let labelStyle = {color: 'white'};
 
           // Change label color based on focus

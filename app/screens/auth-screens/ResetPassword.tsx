@@ -18,7 +18,13 @@ import SubmitButton from '../../components/button';
 import OtpInput from '../../components/otpInput';
 import {axiosPublic} from '../../utils/axiosConfig';
 import {endpoints} from '../../constants';
-const SignIn = ({navigation, route}) => {
+import {AuthStackParamList} from '../../navigations/auth-navigator';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+type ResetPasswordScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'ResetPassword'
+>;
+const SignIn = ({navigation, route}: ResetPasswordScreenProps) => {
   const {email} = route.params;
   const [currentOtp, setCurrentOtp] = useState('');
   const [password, setPassword] = useState('');
@@ -87,7 +93,7 @@ const SignIn = ({navigation, route}) => {
           onPress: () => navigation.navigate('SignIn'),
         },
       ]);
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log('inside catch', error?.response);
       Alert.alert(
         'Information',

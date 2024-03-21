@@ -3,31 +3,7 @@
 import {useState, useEffect} from 'react';
 import {axiosPrivate} from '../utils/axiosConfig';
 import {endpoints} from '../constants';
-export interface PersonalProfileData {
-  id?: number;
-  name: string;
-  email?: string;
-  profile_pic: string | null;
-  mobile_number: string | null;
-  address: string | null;
-  zipcode: string | null;
-  city: string | null;
-  state: string | null;
-  country: string | null;
-}
-
-export interface ProfessionalProfileData {
-  experience: number | null;
-  rate: number | null;
-  specialization: string | null;
-  portfolio: string | null;
-  email_verified_at?: string | null;
-  category_id: number | null;
-  service_id: number | null;
-  business_hours_enabled: number | null;
-  skills: string | null;
-  working_hours?: null | any;
-}
+import {PersonalProfileData, ProfessionalProfileData} from '../types';
 
 const useProfileData = () => {
   const [personalData, setPersonalData] = useState<PersonalProfileData | null>(
@@ -116,7 +92,8 @@ const useProfileData = () => {
       const url = isPersonal
         ? endpoints.UPDATE_PROFILE
         : endpoints.UPDATE_BUSINESS_PROFILE;
-      const response = await axiosPrivate.post(`${url}`, formData, {
+      //  const response =
+      await axiosPrivate.post(`${url}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           // Add any other necessary headers here (e.g., authorization)

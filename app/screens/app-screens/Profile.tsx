@@ -1,25 +1,16 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
+import {StyleSheet, Text, SafeAreaView, ScrollView} from 'react-native';
 import {
   responsiveHeight as rh,
   responsiveWidth as rw,
   responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
-import {useSelector} from 'react-redux';
-import {selectUser} from '../../redux/slices/authSlice';
+
 import useProfileData from '../../hooks/useProfileData';
 import Header from '../../components/header';
 import ToggleButton from '../../components/toggleButton';
 import PersonalProfile from '../../components/personalProfile';
 import ProfessionalProfile from '../../components/proffesionalProfile';
-import Button from '../../components/button';
 import Loader from '../../components/loader';
 const Profile = () => {
   const {personalData, professionalData, isLoading, error, updateProfileData} =
