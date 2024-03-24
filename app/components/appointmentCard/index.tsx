@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {Appointment} from '../../types';
 import {IMAGE_URL} from '../../constants';
-import {format} from 'date-fns';
+import {format, parse, isValid} from 'date-fns';
 
 import {
   responsiveWidth,
@@ -27,7 +27,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   const providerProfilePic = appointment?.service?.images
     ? `${IMAGE_URL}${appointment?.service?.images[0]}`
     : 'https://via.placeholder.com/150';
-
+  function isValidDateFormat(dateString: string, format: string) {
+    const date = parse(dateString, format, new Date());
+    return isValid(date);
+  }
   return (
     <View style={styles.card}>
       <Image source={{uri: providerProfilePic}} style={styles.image} />
@@ -47,8 +50,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           <Text style={styles.phoneNumber}>{appointment.mobile_number}</Text>
         </View>
         <View style={styles.dateTimeRow}>
-          <Text>{appointment.booking_date}</Text>
-          <Text>{format(new Date(appointment.booking_time), 'p')}</Text>
+          <Text>{appointment?.booking_date}</Text>
+          {appointment?.booking_time && (
+            <Text>{format(new Date(appointment?.booking_time), 'p')}</Text>
+          )}
         </View>
         <View style={styles.actionButtonContainer}>
           {appointment.status === 'cancelled' ||

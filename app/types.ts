@@ -26,6 +26,7 @@ export interface ProfessionalProfileData {
 }
 
 export interface Appointment {
+  user: any;
   id: number;
   service_id: number;
   provider_id: number;
@@ -35,6 +36,7 @@ export interface Appointment {
   city: string;
   state: string;
   country: string;
+  mobile_number?: string;
   booking_date: string;
   booking_time: string;
   status: string;

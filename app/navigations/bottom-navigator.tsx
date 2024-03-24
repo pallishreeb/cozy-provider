@@ -1,6 +1,6 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/app-screens/Home';
-import Notification from '../screens/app-screens/Notification';
+// import Notification from '../screens/app-screens/Notification';
 import Appointment from '../screens/app-screens/Appointment';
 import Profile from '../screens/app-screens/Profile';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -13,7 +13,7 @@ import {
 export type BottomTabParamList = {
   Home: undefined;
   Appointment: undefined;
-  Notification: undefined;
+  // Notification: undefined;
   Profile: undefined;
 };
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -39,9 +39,11 @@ export default function MyTabs() {
 
           if (route.name === 'Home') {
             iconName = 'home';
-          } else if (route.name === 'Notification') {
-            iconName = 'bell';
-          } else if (route.name === 'Appointment') {
+          }
+          // else if (route.name === 'Notification') {
+          //   iconName = 'bell';
+          // }
+          else if (route.name === 'Appointment') {
             iconName = 'calendar-check-o';
           } else if (route.name === 'Profile') {
             iconName = 'user-circle';
@@ -82,13 +84,13 @@ export default function MyTabs() {
           headerShown: false,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Notification"
         component={Notification}
         options={{
           headerShown: false,
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Profile"
         component={Profile}

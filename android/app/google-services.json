@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "778884578932",
+    "firebase_url": "https://cozy-6d2b9-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "cozy-6d2b9",
+    "storage_bucket": "cozy-6d2b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778884578932:android:9b7cabdacf5fbf298f5b21",
+        "android_client_info": {
+          "package_name": "com.cozy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjRt9oSVlz7toOpgbeDlMUzj-hxickxp8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

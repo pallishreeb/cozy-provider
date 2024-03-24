@@ -17,34 +17,40 @@ const Profile = () => {
     useProfileData();
 
   const [isPersonal, setIsPersonal] = useState(true);
-  if (isLoading) {
-    return <Loader />;
-  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Text style={styles.headerText1}>
-          <Text style={{color: '#333'}}>My</Text> Profile
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <Text style={styles.errorText}>
+          {error || 'Something Went Wrong!'}{' '}
         </Text>
-        <ToggleButton isPersonal={isPersonal} setIsPersonal={setIsPersonal} />
-        <Text style={styles.headerText2}>
-          {isPersonal
-            ? 'Create Your Personal Profile'
-            : 'Create Your Professional Profile'}
-        </Text>
-        {isPersonal ? (
-          <PersonalProfile
-            initialValues={personalData!}
-            updateProfileData={updateProfileData}
-          />
-        ) : (
-          <ProfessionalProfile
-            initialValues={professionalData}
-            updateProfileData={updateProfileData}
-          />
-        )}
-      </ScrollView>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          <Text style={styles.headerText1}>
+            <Text style={{color: '#333'}}>My</Text> Profile
+          </Text>
+          <ToggleButton isPersonal={isPersonal} setIsPersonal={setIsPersonal} />
+          <Text style={styles.headerText2}>
+            {isPersonal
+              ? 'Create Your Personal Profile'
+              : 'Create Your Professional Profile'}
+          </Text>
+          {isPersonal ? (
+            <PersonalProfile
+              initialValues={personalData!}
+              updateProfileData={updateProfileData}
+            />
+          ) : (
+            <ProfessionalProfile
+              initialValues={professionalData}
+              updateProfileData={updateProfileData}
+            />
+          )}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -73,5 +79,11 @@ const styles = StyleSheet.create({
     color: '#5B5B5B',
     marginLeft: rw(5),
     marginVertical: rh(0.5),
+  },
+  errorText: {
+    fontSize: rf(2),
+    color: 'red',
+    textAlign: 'center',
+    marginTop: rh(20),
   },
 });

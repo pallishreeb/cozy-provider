@@ -11,28 +11,39 @@ import {
   Platform,
 } from 'react-native';
 import {
-  responsiveHeight as hp,
-  responsiveWidth as wp,
-  responsiveFontSize as fp,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+  responsiveFontSize as rf,
 } from 'react-native-responsive-dimensions';
 import Header from '../../components/header';
 import {AppStackParamList} from '../../navigations/app-navigator';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {db} from '../../firebase';
+
 import {
   collection,
   addDoc,
   query,
   orderBy,
   onSnapshot,
+  DocumentData,
+  FirestoreError,
 } from 'firebase/firestore';
+import Loader from '../../components/loader';
 
 type ChatScreenProps = NativeStackScreenProps<AppStackParamList, 'Chat'>;
-
+interface Message extends DocumentData {
+  id: string;
+  createdAt: {
+    toDate(): Date;
+  };
+}
 const Chat = ({navigation, route}: ChatScreenProps) => {
   const {user, provider} = route.params;
   const [text, setText] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   let userId = user?.id && user?.name + user?.id;
   let providerId = provider?.id && provider?.name + provider?.id;
   let serviceId = provider?.service_id;
@@ -47,13 +58,21 @@ const Chat = ({navigation, route}: ChatScreenProps) => {
     const messagesRef = collection(db, 'Chats', chatId, 'messages');
     const q = query(messagesRef, orderBy('createdAt', 'asc'));
 
-    const unsubscribe = onSnapshot(q, querySnapshot => {
-      const msgs = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setMessages(msgs);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      querySnapshot => {
+        const msgs = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          id: doc.id,
+        })) as Message[];
+        setMessages(msgs);
+        setLoading(false);
+      },
+      (error: FirestoreError) => {
+        setError(error.message);
+        setLoading(false);
+      },
+    );
 
     return () => unsubscribe();
   }, [chatId]);
@@ -64,20 +83,19 @@ const Chat = ({navigation, route}: ChatScreenProps) => {
     const time = new Date();
     const userMsg = {
       text: text,
-      provider: provider?.id,
-      user: user?.id,
+      sentBy: `provider_${provider?.id}`,
+      sentTo: `user_${user?.id}`,
       createdAt: time,
     };
-
     try {
       const docRef = collection(db, 'Chats', chatId, 'messages');
       await addDoc(docRef, userMsg);
       setText('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message: ', error);
+      setError(error?.message);
     }
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <Header
@@ -85,26 +103,35 @@ const Chat = ({navigation, route}: ChatScreenProps) => {
         isChatScreen={true}
         user={user}
       />
-      <FlatList
-        data={messages}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <View
-            style={[
-              styles.messageBubble,
-              item?.provider === provider.id
-                ? styles.userMessage
-                : styles.otherMessage,
-            ]}>
-            <Text style={styles.messageText}>{item.text}</Text>
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <View style={styles.errorText}>
+          <Text>Error loading messages: {error}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={messages}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => (
+            <View
+              style={[
+                styles.messageBubble,
+                item?.sentBy === `provider_${provider?.id}`
+                  ? styles.userMessage
+                  : styles.otherMessage,
+              ]}>
+              <Text style={styles.messageText}>{item.text}</Text>
 
-            <Text style={styles.messageTime}>
-              {item.createdAt?.toDate().toLocaleTimeString()}
-            </Text>
-          </View>
-        )}
-        contentContainerStyle={styles.flatListContentContainer}
-      />
+              <Text style={styles.messageTime}>
+                {item.createdAt?.toDate().toLocaleTimeString()}
+              </Text>
+            </View>
+          )}
+          contentContainerStyle={styles.flatListContentContainer}
+        />
+      )}
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.inputContainer}>
@@ -131,12 +158,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flatListContentContainer: {
-    padding: wp(4),
+    padding: rw(4),
   },
   messageBubble: {
-    padding: hp(2),
+    padding: rh(2),
     borderRadius: 20,
-    marginBottom: hp(1),
+    marginBottom: rh(1),
     maxWidth: '80%',
   },
   userMessage: {
@@ -152,15 +179,15 @@ const styles = StyleSheet.create({
   },
   messageTime: {
     alignSelf: 'flex-end',
-    fontSize: fp(1.5),
+    fontSize: rf(1.5),
     color: '#E1E1E1',
-    marginTop: hp(0.5),
+    marginTop: rh(0.5),
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: wp(4),
-    paddingVertical: hp(2),
+    paddingHorizontal: rw(4),
+    paddingVertical: rh(2),
   },
   input: {
     flex: 1,
@@ -168,20 +195,26 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#E1E1E1',
     borderRadius: 20,
-    paddingHorizontal: wp(4),
-    marginRight: wp(2),
-    height: hp(6),
+    paddingHorizontal: rw(4),
+    marginRight: rw(2),
+    height: rh(6),
   },
   sendButton: {
     backgroundColor: '#FF3131',
     borderRadius: 20,
-    height: hp(6),
+    height: rh(6),
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: wp(4),
+    paddingHorizontal: rw(4),
   },
   sendButtonText: {
     color: 'white',
-    fontSize: fp(2),
+    fontSize: rf(2),
+  },
+  errorText: {
+    fontSize: rf(2),
+    color: 'red',
+    textAlign: 'center',
+    marginTop: rh(20),
   },
 });

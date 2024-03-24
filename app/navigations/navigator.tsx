@@ -2,7 +2,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import AppNavigator from './app-navigator';
 import AuthNavigator from './auth-navigator';
 import {axiosPrivate} from '../utils/axiosConfig';
-// import {remove} from '../utils/storage';
+import linking from '../utils/linkingConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect} from 'react';
 import {Alert} from 'react-native';
@@ -13,6 +13,7 @@ import {
   setSignIn,
   setSignOut,
 } from '../redux/slices/authSlice';
+import Loader from '../components/loader';
 export default () => {
   let isLoggedIn = useSelector(selectIsLoggedIn);
 
@@ -54,7 +55,7 @@ export default () => {
     },
   );
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking} fallback={<Loader />}>
       {/* Conditional stack navigator rendering based on login state */}
       {isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>

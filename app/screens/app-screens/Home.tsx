@@ -237,23 +237,13 @@ const styles = StyleSheet.create({
     marginVertical: rh(1.7),
     marginHorizontal: rw(1),
   },
-
-  // timePickerBox: {
-  //   borderWidth: 1,
-  //   borderColor: '#ccc',
-  //   padding: 10,
-  //   borderRadius: 4,
-  //   marginBottom: 5,
-  //   minWidth: 100,
-  //   textAlign: 'center', // Ensure text is centered
-  // },
   dayRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: rw(3),
     marginVertical: rh(1),
-    flexWrap: 'wrap', // Allow items to wrap if necessary
+    flexWrap: 'wrap', 
   },
   dayName: {
     // Style for the day name text

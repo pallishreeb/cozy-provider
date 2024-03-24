@@ -41,21 +41,23 @@ export default ({onBackPress = () => {}, isChatScreen = false, user = {}}) => {
     <View style={styles.container}>
       <StatusBar backgroundColor={'#FF3131'} barStyle="light-content" />
       <View style={styles.topHeaderConatiner}>
-        {isChatScreen && (
+        {isChatScreen ? (
           <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
             <Icon name="arrow-back" size={rf(3)} color="#FFF" />
             {/* Display the user's name next to the back button if isChatScreen is true */}
-            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userName}>{user?.name}</Text>
           </TouchableOpacity>
+        ) : (
+          <View />
         )}
 
-        {!isChatScreen && (
+        {!isChatScreen ? (
           <Image
             source={require('../../assets/header-image.png')}
             resizeMode={'stretch'}
             style={styles.headerImage}
           />
-        )}
+        ) : null}
         <Icon
           name="logout"
           size={rf(3)}

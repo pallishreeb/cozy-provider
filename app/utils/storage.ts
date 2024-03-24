@@ -1,79 +1,65 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/**
- * Loads a string from storage.
- *
- * @param key The key to fetch.
- */
+interface StorageItem {
+  // Define your expected structure here
+  [key: string]: any; // Try to avoid 'any' by specifying a more detailed structure
+}
+
 export async function loadString(key: string): Promise<string | null> {
   try {
     return await AsyncStorage.getItem(key);
-  } catch {
-    // not sure why this would fail... even reading the RN docs I'm unclear
+  } catch (error) {
+    console.error('Failed to load string:', error);
     return null;
   }
 }
 
-/**
- * Saves a string to storage.
- *
- * @param key The key to fetch.
- * @param value The value to store.
- */
 export async function saveString(key: string, value: string): Promise<boolean> {
   try {
     await AsyncStorage.setItem(key, value);
     return true;
-  } catch {
+  } catch (error) {
+    console.error('Failed to save string:', error);
     return false;
   }
 }
 
-/**
- * Loads something from storage and runs it thru JSON.parse.
- *
- * @param key The key to fetch.
- */
-export async function load(key: string): Promise<any | null> {
+export async function load(key: string): Promise<StorageItem | null> {
   try {
-    const almostThere = await AsyncStorage.getItem(key);
-    return JSON.parse(almostThere!);
-  } catch {
+    const item = await AsyncStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (error) {
+    console.error('Failed to load item:', error);
     return null;
   }
 }
 
-/**
- * Saves an object to storage.
- *
- * @param key The key to fetch.
- * @param value The value to store.
- */
-export async function save(key: string, value: any): Promise<boolean> {
+export async function save(key: string, value: StorageItem): Promise<boolean> {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(value));
     return true;
-  } catch {
+  } catch (error) {
+    console.error('Failed to save item:', error);
     return false;
   }
 }
 
-/**
- * Removes something from storage.
- *
- * @param key The key to kill.
- */
-export async function remove(key: string): Promise<void> {
+export async function remove(key: string): Promise<boolean> {
   try {
     await AsyncStorage.removeItem(key);
-  } catch {}
+    return true;
+  } catch (error) {
+    console.error('Failed to remove item:', error);
+    return true;
+  }
 }
 
-/**
- * Burn it all to the ground.
- */
-export async function clear(): Promise<void> {
+export async function clear(): Promise<boolean> {
   try {
     await AsyncStorage.clear();
-  } catch {}
+    return true;
+  } catch (error) {
+    console.error('Failed to clear storage:', error);
+    return true;
+  }
 }

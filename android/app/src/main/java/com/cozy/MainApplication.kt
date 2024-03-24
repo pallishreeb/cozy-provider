@@ -1,4 +1,4 @@
-package com.cozy_service_provider
+package com.cozy
 
 import android.app.Application
 import com.facebook.react.PackageList
