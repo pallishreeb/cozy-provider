@@ -24,16 +24,16 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onCancel,
   onChat,
 }) => {
-  const providerProfilePic = appointment?.service?.images
-    ? `${IMAGE_URL}${appointment?.service?.images[0]}`
-    : 'https://via.placeholder.com/150';
+  const serviceImage = appointment?.service?.images
+    ? {uri: `${IMAGE_URL}${appointment?.service?.images[0]}`}
+    : require('../../assets/placeholder.jpg');
   // function isValidDateFormat(dateString: string, format: string) {
   //   const date = parse(dateString, format, new Date());
   //   return isValid(date);
   // }
   return (
     <View style={styles.card}>
-      <Image source={{uri: providerProfilePic}} style={styles.image} />
+      <Image source={serviceImage} style={styles.image} />
       <View style={styles.details}>
         <View style={styles.header}>
           <Text style={styles.providerName}>{appointment?.user?.name}</Text>

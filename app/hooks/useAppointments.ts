@@ -44,7 +44,7 @@ const useAppointments = (providerId: number, showPastAppointments: boolean) => {
   const cancelAppointment = async (id: number) => {
     try {
       //   const response =
-      axiosPrivate.delete(`${endpoints.CANCEL_BOOKING}/${id}`);
+      await axiosPrivate.delete(`${endpoints.CANCEL_BOOKING}/${id}`);
       Alert.alert('Information', 'Successfully Cancelled Appointment!');
       //   console.log(response, 'cancel appointment response');
       return true;
@@ -57,7 +57,7 @@ const useAppointments = (providerId: number, showPastAppointments: boolean) => {
   const completeAppointment = async (id: number) => {
     try {
       //   const response =
-      axiosPrivate.put(`${endpoints.COMPLETE_BOOKING}/${id}`);
+      await axiosPrivate.put(`${endpoints.COMPLETE_BOOKING}/${id}`);
       Alert.alert('Information', 'Successfully Completed Appointment!');
       //   console.log(response, 'cancel appointment response');
       return true;

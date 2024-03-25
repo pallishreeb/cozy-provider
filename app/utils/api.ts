@@ -41,3 +41,21 @@ const fetchServices = async () => {
     return []; // Return an empty array as a fallback
   }
 };
+export const sendPushNotification = async (
+  sentToId: number,
+  sentByName: string,
+  sentById: number,
+) => {
+  try {
+    await axiosPrivate.post(endpoints.SEND_PUSH_NOTIFICATION, {
+      sentToId,
+      sentByName,
+      sentById,
+      sentByApp: 'provider',
+    });
+    return true;
+  } catch (error) {
+    console.log(error, 'error in send push notification for message');
+    return false;
+  }
+};

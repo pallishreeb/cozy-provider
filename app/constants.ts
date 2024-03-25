@@ -16,6 +16,7 @@ export const endpoints = {
   CANCEL_BOOKING: 'bookings',
   COMPLETE_BOOKING: 'bookings/complete',
   SAVE_TOKEN: 'provider/save-token',
+  SEND_PUSH_NOTIFICATION: 'send-push-notification',
 };
 export const IMAGE_URL = 'http://10.0.2.2:8000';
 export const experiencesList = [

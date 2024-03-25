@@ -42,10 +42,14 @@ const Appointment = ({navigation}: AppointmentScreenProps) => {
   } = useAppointments(profileData?.id!, showPastAppointments);
   useFocusEffect(
     React.useCallback(() => {
-      if (profileData?.id) {
-        refreshAppointments();
-      }
-    }, [showPastAppointments, profileData?.id!]),
+      const refresh = async () => {
+        if (profileData?.id) {
+          await refreshAppointments();
+        }
+      };
+
+      refresh();
+    }, [profileData?.id!, showPastAppointments]),
   );
   const renderHeader = () => (
     <>

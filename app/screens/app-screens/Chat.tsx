@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import {format} from 'date-fns';
 import {
   responsiveHeight as rh,
   responsiveWidth as rw,
@@ -30,6 +31,7 @@ import {
   FirestoreError,
 } from 'firebase/firestore';
 import Loader from '../../components/loader';
+import {sendPushNotification} from '../../utils/api';
 
 type ChatScreenProps = NativeStackScreenProps<AppStackParamList, 'Chat'>;
 interface Message extends DocumentData {
@@ -90,6 +92,7 @@ const Chat = ({navigation, route}: ChatScreenProps) => {
     try {
       const docRef = collection(db, 'Chats', chatId, 'messages');
       await addDoc(docRef, userMsg);
+      await sendPushNotification(user?.id, provider?.name, provider?.id);
       setText('');
     } catch (error: any) {
       console.error('Error sending message: ', error);
@@ -122,9 +125,8 @@ const Chat = ({navigation, route}: ChatScreenProps) => {
                   : styles.otherMessage,
               ]}>
               <Text style={styles.messageText}>{item.text}</Text>
-
               <Text style={styles.messageTime}>
-                {item.createdAt?.toDate().toLocaleTimeString()}
+                {format(item.createdAt.toDate(), 'PPpp')}
               </Text>
             </View>
           )}

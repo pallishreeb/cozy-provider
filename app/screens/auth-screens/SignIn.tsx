@@ -186,38 +186,37 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    marginBottom: 45,
-    borderBottomStartRadius: 80,
-    borderBottomEndRadius: 80,
+    marginBottom: rh(5),
+    borderBottomStartRadius: rw(20),
+    borderBottomEndRadius: rw(20),
   },
   illustrationImg: {
     height: rf(30),
     width: rf(30),
     marginTop: rh(-3),
   },
-
   headingText: {
     textAlign: 'left',
     top: rf(10),
     left: rf(-6),
-    marginTop: 20,
+    marginTop: rh(2.5),
     color: 'white',
   },
   headingText1: {
-    fontSize: 24, // Adjust the size as needed
+    fontSize: rf(3),
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
   headingText2: {
-    fontSize: 18, // Adjust for smaller text
-    fontWeight: 'normal', // Or specify the desired weight
-    textTransform: 'none', // Default, but explicitly stated for clarity
-    marginTop: 5, // Add some space between the two texts
+    fontSize: rf(2.25),
+    fontWeight: 'normal',
+    textTransform: 'none',
+    marginTop: rh(0.625),
   },
   errorMSg: {
     color: 'red',
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: rf(1.75),
+    marginBottom: rh(1),
   },
   overlayView: {
     width: rw(100),
@@ -227,17 +226,16 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   fieldContainer: {
-    marginTop: 20,
+    marginTop: rh(2.5),
     marginHorizontal: rw(6),
   },
   label: {
-    fontSize: 16,
+    fontSize: rf(2),
     color: 'gray',
-    marginBottom: 5,
+    marginBottom: rh(0.625),
   },
-
   forgotPasswordContainer: {
-    marginVertical: 20,
+    marginVertical: rh(2.5),
     alignItems: 'flex-end',
   },
   forgotPasswordText: {
@@ -245,14 +243,14 @@ const styles = StyleSheet.create({
     textDecorationLine: 'none',
   },
   submitButtonConatiner: {
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: rh(2.5),
+    marginTop: rh(2.5),
   },
   footer: {
-    marginTop: 'auto', // Pushes the footer to the bottom
-    paddingTop: 20, // Adjust based on your design
-    paddingBottom: 20, // Adjust based on your design
-    paddingHorizontal: 20,
+    marginTop: 'auto',
+    paddingTop: rh(2.5),
+    paddingBottom: rh(2.5),
+    paddingHorizontal: rw(5),
     alignItems: 'center',
   },
   footerText: {

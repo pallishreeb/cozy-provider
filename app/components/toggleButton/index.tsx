@@ -52,9 +52,9 @@ const styles = StyleSheet.create({
     marginTop: rh(0.5),
     marginBottom: rh(0.9),
     marginHorizontal: rw(3.6),
-    backgroundColor: '#E0E0E0', // Light grey background for the toggle container
+    backgroundColor: '#E0E0E0',
     borderRadius: 20,
-    overflow: 'hidden', // Ensures the child elements do not overlap the container's rounded corners
+    overflow: 'hidden',
     // paddingVertical: rf(0.2),
     // paddingHorizontal: rf(0.6),
   },
@@ -62,23 +62,23 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: rh(1),
     paddingHorizontal: rw(5),
-    flexGrow: 1, // Ensures the buttons take up equal space
-    alignItems: 'center', // Centers the text horizontally
+    flexGrow: 1,
+    alignItems: 'center',
   },
   toggleButtonActive: {
-    backgroundColor: '#FF3131', // Active button has a distinct background color
+    backgroundColor: '#FF3131',
   },
   toggleButtonInactive: {
-    backgroundColor: 'transparent', // Inactive button remains transparent but still clickable
+    backgroundColor: 'transparent',
   },
   toggleText: {
     fontWeight: 'bold',
     fontSize: rf(1.8),
   },
   toggleTextActive: {
-    color: '#FFFFFF', // Active text color contrasts with its background
+    color: '#FFFFFF',
   },
   toggleTextInactive: {
-    color: '#000000', // Inactive text color for readability
+    color: '#000000',
   },
 });

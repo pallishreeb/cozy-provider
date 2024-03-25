@@ -8,7 +8,11 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {responsiveFontSize as rf} from 'react-native-responsive-dimensions';
+import {
+  responsiveFontSize as rf,
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+} from 'react-native-responsive-dimensions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useDispatch} from 'react-redux';
 import {remove} from '../../utils/storage';
@@ -73,28 +77,26 @@ export default ({onBackPress = () => {}, isChatScreen = false, user = {}}) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FF3131',
-    paddingVertical: 12,
+    paddingVertical: rh(1.5),
   },
   topHeaderConatiner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 21,
+    marginHorizontal: rw(5.8),
   },
   backButton: {
-    flexDirection: 'row', // Ensure the back button and the user name are in a row
-    alignItems: 'center', // Center items vertically
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   userName: {
     color: 'white',
     fontSize: rf(2.2),
-    marginLeft: 10, // Add some spacing between the back button and the user name
+    marginLeft: rw(2.8),
   },
   headerImage: {
-    width: 70,
-    height: 32,
+    width: rw(19.4),
+    height: rh(4.5),
   },
-  logoutIcon: {
-    // If you need to apply specific styles to the logout icon, do it here
-  },
+  logoutIcon: {},
 });
