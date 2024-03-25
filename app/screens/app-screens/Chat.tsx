@@ -39,14 +39,14 @@ interface Message extends DocumentData {
   };
 }
 const Chat = ({navigation, route}: ChatScreenProps) => {
-  const {user, provider} = route.params;
+  const {user, provider, serviceId} = route.params;
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   let userId = user?.id && user?.name + user?.id;
   let providerId = provider?.id && provider?.name + provider?.id;
-  let serviceId = provider?.service_id;
+  // let serviceId = provider?.service_id;
   const chatId =
     userId && providerId
       ? [userId, providerId, serviceId].sort().join('-')

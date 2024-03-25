@@ -133,6 +133,7 @@ const Appointment = ({navigation}: AppointmentScreenProps) => {
               navigation.navigate('Chat', {
                 user: item.user,
                 provider: item.provider,
+                serviceId: item.service_id,
               })
             }
           />

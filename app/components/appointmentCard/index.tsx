@@ -27,16 +27,16 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   const providerProfilePic = appointment?.service?.images
     ? `${IMAGE_URL}${appointment?.service?.images[0]}`
     : 'https://via.placeholder.com/150';
-  function isValidDateFormat(dateString: string, format: string) {
-    const date = parse(dateString, format, new Date());
-    return isValid(date);
-  }
+  // function isValidDateFormat(dateString: string, format: string) {
+  //   const date = parse(dateString, format, new Date());
+  //   return isValid(date);
+  // }
   return (
     <View style={styles.card}>
       <Image source={{uri: providerProfilePic}} style={styles.image} />
       <View style={styles.details}>
         <View style={styles.header}>
-          <Text style={styles.providerName}>{appointment.provider.name}</Text>
+          <Text style={styles.providerName}>{appointment?.user?.name}</Text>
           <TouchableOpacity style={styles.chatButton} onPress={onChat}>
             <Text style={styles.buttonText}>Chat</Text>
           </TouchableOpacity>

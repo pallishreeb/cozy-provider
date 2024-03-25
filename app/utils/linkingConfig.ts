@@ -12,9 +12,11 @@ function buildDeepLinkFromNotificationData(data: any): string | null {
   if (navigationId === 'chat') {
     const user = data?.user;
     const provider = data?.provider;
-    if (user && provider) {
+    if (user?.id && provider?.id) {
       // Assuming user and provider IDs are sufficient to identify them
       return `myapp://chat/${user}/${provider}`;
+    } else {
+      return 'myapp://MyTabs/Appointment';
     }
   }
   if (navigationId === 'booking') {
@@ -36,10 +38,10 @@ const linking = {
         },
       },
       Chat: {
-        path: 'chat/:userId/:providerId',
+        path: 'chat/:user/:provider',
         parse: {
-          userId: user => `${user}`,
-          providerId: provider => `${provider}`,
+          user: user => `${user}`,
+          provider: provider => `${provider}`,
         },
       },
     },

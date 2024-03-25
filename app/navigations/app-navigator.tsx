@@ -12,7 +12,7 @@ PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 const TOKEN_SENT_KEY = 'ProviderTokenSent';
 export type AppStackParamList = {
   MyTabs: undefined;
-  Chat: {user: any; provider: any};
+  Chat: {user: any; provider: any; serviceId: number};
 };
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
