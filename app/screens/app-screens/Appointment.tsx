@@ -152,7 +152,7 @@ const Appointment = ({navigation}: AppointmentScreenProps) => {
       <Header />
 
       {renderHeader()}
-      {getContent()}
+      {/* {getContent()} */}
     </SafeAreaView>
   );
 };
